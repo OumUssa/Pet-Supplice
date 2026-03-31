@@ -97,7 +97,7 @@ export default function Signup() {
             <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
               Register
             </div>
-            <h1 className="text-3xl md:text-4xl font-black leading-tight text-white drop-shadow-sm">
+            <h1 className="text-2xl md:text-2xl font-black leading-tight text-white drop-shadow-sm">
               Create Your PETZONE Profile
             </h1>
             <p className="mt-3 text-slate-100/90 leading-relaxed max-w-sm">
@@ -119,7 +119,7 @@ export default function Signup() {
           </div>
 
           <div className="p-8 md:p-10 bg-white text-black flex flex-col">
-            <h2 className="text-3xl mb-8 font-black text-slate-800">
+            <h2 className="text-2xl mb-8 font-black text-slate-800">
               Create Account
             </h2>
 

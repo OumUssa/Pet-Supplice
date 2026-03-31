@@ -4,10 +4,13 @@ import {
   BarChart3,
   Boxes,
   CheckCircle2,
+  Compass,
   Heart,
   LayoutDashboard,
+  Rocket,
   ShieldCheck,
   Sparkles,
+  Target,
   Users,
 } from "lucide-react";
 import Header from "../Header/Header";
@@ -31,7 +34,7 @@ const highlights = [
   },
   {
     title: "Customer-Centered Support",
-    desc: "Contact and Services pages provide clear help paths for pet owners.",
+    desc: "Contact pages provide clear help paths for pet owners.",
     icon: Users,
   },
 ];
@@ -43,35 +46,50 @@ const values = [
   "Reliable and simple user flow",
 ];
 
+const roadmap = [
+  {
+    title: "Phase 1 - Unified Storefront",
+    desc: "Create one clear shopping experience with category-based filtering.",
+    icon: Compass,
+  },
+  {
+    title: "Phase 2 - Better Admin Flow",
+    desc: "Improve dashboard operations for adding and updating products faster.",
+    icon: Target,
+  },
+  {
+    title: "Phase 3 - Ongoing Improvement",
+    desc: "Enhance speed, UX clarity, and customer support touchpoints.",
+    icon: Rocket,
+  },
+];
+
 const AboutPage = () => {
   return (
     <>
       <Header />
 
       <div className="site-shell text-slate-800">
-        <section className="relative overflow-hidden bg-gradient-to-r from-teal-700 via-cyan-700 to-sky-700 text-white py-16 md:py-20">
-          <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
-          <div className="absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
-
+        <section className="relative overflow-hidden bg-[linear-gradient(140deg,#0f766e_0%,#0f172a_70%)] text-white py-16 md:py-20">
           <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
             <p className="uppercase tracking-[0.18em] text-cyan-100 text-sm mb-3 fade-up">
               About PETZONE
             </p>
-            <h1 className="text-4xl md:text-6xl font-black max-w-3xl leading-tight fade-up">
-              One Website Experience For Every Pet Need
+            <h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight fade-up">
+              One Platform For Better Pet Shopping
             </h1>
             <p
               className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up"
               style={{ animationDelay: "120ms" }}>
-              PETZONE combines shopping, services, support, and admin product
-              management in a single consistent platform.
+              PETZONE combines browsing, buying, and product management in one
+              connected experience focused on speed, clarity, and trust.
             </p>
           </div>
         </section>
 
         <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14">
           <section className="grid lg:grid-cols-5 gap-6 md:gap-8">
-            <div className="lg:col-span-3 brand-card p-6 md:p-8 fade-up">
+            <div className="lg:col-span-3 brand-card about-content-flat p-6 md:p-8 fade-up">
               <h2 className="text-2xl md:text-3xl font-black mb-4">
                 Our Story
               </h2>
@@ -82,9 +100,8 @@ const AboutPage = () => {
                 clear navigation.
               </p>
               <p className="text-slate-600 leading-relaxed mb-4">
-                From category browsing in Shop, to guidance in Services, to
-                direct communication in Contact, every page follows one brand
-                language.
+                From category browsing in Shop to direct communication in
+                Contact, every page follows one brand language.
               </p>
               <p className="text-slate-600 leading-relaxed">
                 Our goal is straightforward: help pet owners find better
@@ -94,7 +111,7 @@ const AboutPage = () => {
             </div>
 
             <div
-              className="lg:col-span-2 brand-card p-6 md:p-8 fade-up"
+              className="lg:col-span-2 brand-card about-content-flat p-6 md:p-8 fade-up"
               style={{ animationDelay: "90ms" }}>
               <h3 className="text-xl font-black mb-4">Core Values</h3>
               <ul className="space-y-3">
@@ -127,7 +144,7 @@ const AboutPage = () => {
               return (
                 <article
                   key={item.title}
-                  className="brand-card p-6 transition duration-300 fade-up"
+                  className="brand-card about-content-flat p-6 transition duration-300 fade-up"
                   style={{ animationDelay: `${idx * 80}ms` }}>
                   <div className="brand-icon mb-4">
                     <Icon className="w-5 h-5 text-cyan-700" />
@@ -141,8 +158,28 @@ const AboutPage = () => {
             })}
           </section>
 
+          <section className="mt-10 grid lg:grid-cols-3 gap-5">
+            {roadmap.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <article
+                  key={item.title}
+                  className="brand-card about-content-flat p-6 fade-up"
+                  style={{ animationDelay: `${120 + idx * 70}ms` }}>
+                  <div className="brand-icon mb-4">
+                    <Icon className="w-5 h-5 text-cyan-700" />
+                  </div>
+                  <h3 className="text-lg font-black mb-2">{item.title}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
+                </article>
+              );
+            })}
+          </section>
+
           <section
-            className="mt-10 brand-card p-6 md:p-8 fade-up"
+            className="mt-10 brand-card about-content-flat p-6 md:p-8 fade-up"
             style={{ animationDelay: "200ms" }}>
             <div className="flex flex-wrap items-start justify-between gap-5">
               <div className="max-w-2xl">
@@ -161,9 +198,9 @@ const AboutPage = () => {
                   Explore Shop
                 </Link>
                 <Link
-                  to="/services"
+                  to="/contact"
                   className="inline-flex px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition">
-                  View Services
+                  Contact Us
                 </Link>
               </div>
             </div>
@@ -179,6 +216,13 @@ const AboutPage = () => {
         </main>
 
         <style>{`
+          .about-content-flat,
+          .about-content-flat:hover {
+            border: 0 !important;
+            box-shadow: none !important;
+            transform: none !important;
+          }
+
           .fade-up {
             animation: fadeUp 0.7s ease both;
           }
@@ -191,6 +235,12 @@ const AboutPage = () => {
             to {
               opacity: 1;
               transform: translateY(0);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .fade-up {
+              animation: none !important;
             }
           }
         `}</style>

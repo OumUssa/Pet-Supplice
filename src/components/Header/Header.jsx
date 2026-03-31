@@ -1,14 +1,33 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "../Header/Header.css";
 const Header = () => {
   const pettoken = localStorage.getItem("tokenPet");
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
   const navClass = ({ isActive }) =>
     `text-gray-700 navbar-link font-extrabold block px-5 py-3 transition-all duration-200 ${
       isActive
         ? "hvr-underline-from-left navbar-link-active"
         : "hvr-underline-from-left hover:text-cyan-600"
     }`;
+
+  const submitSearch = () => {
+    const query = searchTerm.trim();
+
+    if (!query) {
+      navigate("/shop");
+      return;
+    }
+
+    navigate(`/shop?q=${encodeURIComponent(query)}`);
+  };
+
+  const onSearchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      submitSearch();
+    }
+  };
 
   return (
     <header className="relative z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-cyan-100">
@@ -26,12 +45,22 @@ const Header = () => {
 
         <div className="flex items-center justify-around space-x-4">
           {/* Right side: search + user links */}
-          <div className="header-search flex items-center">
-            <i className="header-search__icon bi bi-search"></i>
+          <div className="header-search">
+            <i
+              className="header-search__icon bi bi-search cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={submitSearch}
+              onKeyDown={onSearchKeyDown}
+              aria-label="Search"></i>
+
             <input
               type="text"
               placeholder="Search for pets"
               aria-label="Search for pets"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onKeyDown={onSearchKeyDown}
               className="header-search__input"
             />
           </div>
@@ -68,7 +97,7 @@ const Header = () => {
             )}
             <div className="flex items-center h-auto">
               <a href="#">
-                <i className="bi bi-person-fill text-3xl"></i>
+                <i className="bi bi-person-fill text-2xl"></i>
               </a>
               <a href="#">
                 <i className="bi bi-heart-fill text-2xl mx-5"></i>
@@ -334,11 +363,6 @@ const Header = () => {
                 </ul>
               </li>
 
-              <li>
-                <NavLink to="/services" className={navClass}>
-                  Services
-                </NavLink>
-              </li>
               <li>
                 <NavLink to="/about" className={navClass}>
                   About

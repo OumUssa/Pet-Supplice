@@ -105,7 +105,7 @@ export default function LoginForm() {
             <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
               Sign In
             </div>
-            <h1 className="text-3xl md:text-4xl font-black leading-tight text-white drop-shadow-sm">
+            <h1 className="text-2xl md:text-2xl font-black leading-tight text-white drop-shadow-sm">
               Welcome to my website
             </h1>
             <p className="mt-3 max-w-md text-slate-100/90 leading-relaxed">

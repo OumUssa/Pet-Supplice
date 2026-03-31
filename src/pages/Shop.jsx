@@ -9,11 +9,13 @@ const categoryOrder = ["Dog", "Cat", "Bird", "Fish", "Small Pet"];
 export default function Shop() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedCategory = searchParams.get("category") || "All";
   const selectedType = searchParams.get("type") || "All";
+  const searchQuery = (searchParams.get("q") || "").trim().toLowerCase();
 
   useEffect(() => {
     const load = async () => {
@@ -49,9 +51,17 @@ export default function Shop() {
       const categoryOk =
         selectedCategory === "All" || item.category === selectedCategory;
       const typeOk = selectedType === "All" || item.Type === selectedType;
-      return categoryOk && typeOk;
+      const queryOk =
+        !searchQuery ||
+        [item.title, item.content, item.category, item.Type]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(searchQuery);
+
+      return categoryOk && typeOk && queryOk;
     });
-  }, [items, selectedCategory, selectedType]);
+  }, [items, selectedCategory, selectedType, searchQuery]);
 
   const updateFilter = (category, type) => {
     const next = new URLSearchParams(searchParams);
@@ -75,121 +85,215 @@ export default function Shop() {
     navigate(`/checkout?itemId=${item.id}`, { state: { item } });
   };
 
+  const handleCategorySelect = (category) => {
+    updateFilter(category, "All");
+    setIsFilterOpen(false);
+  };
+
+  const handleTypeSelect = (type) => {
+    updateFilter(selectedCategory, type);
+    setIsFilterOpen(false);
+  };
+
   return (
     <div className="site-shell flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div className="rounded-3xl primary-gradient p-8 md:p-12 mb-8">
-          <p className="uppercase tracking-[0.16em] text-sm text-cyan-100 mb-3">
-            PETZONE Shop
-          </p>
-          <h1 className="text-4xl md:text-5xl font-black mb-4">
-            All Categories In One Page
-          </h1>
-          <p className="text-cyan-50 text-lg max-w-2xl">
-            Browse everything here. Category and type selections from the menu
-            will open this page with the right filter.
-          </p>
+      <main className="flex-1 max-w-8xl w-full mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="relative rounded-3xl shop-hero shop-hero--animated p-6 md:p-8 lg:p-10 mb-8 border border-slate-200 overflow-hidden">
+          <div
+            className="shop-hero-blob shop-hero-blob--one"
+            aria-hidden="true"></div>
+          <div
+            className="shop-hero-blob shop-hero-blob--two"
+            aria-hidden="true"></div>
+          <div className="grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8 items-stretch">
+            <div className="relative z-10">
+              <p className="shop-hero-badge inline-flex uppercase tracking-[0.14em] text-xs text-white mb-3 font-bold bg-white/15 border border-white/30 rounded-full px-3 py-1">
+                PETZONE Shop
+              </p>
+              <h1 className="shop-hero-title text-3xl md:text-4xl lg:text-5xl font-black mb-4 text-white leading-tight">
+                Shop Smarter With Fast Filters
+              </h1>
+              <p className="shop-hero-text text-slate-100 text-base md:text-lg max-w-2xl">
+                Explore products by category and type in seconds. Use the left
+                filter menu on desktop or offcanvas filters on mobile for a
+                faster shopping flow.
+              </p>
+            </div>
+
+            <div className="relative z-10 grid grid-cols-2 gap-3 content-start">
+              <div className="shop-hero-stat">
+                <p className="shop-hero-stat__value">{items.length}</p>
+                <p className="shop-hero-stat__label">Products</p>
+              </div>
+              <div className="shop-hero-stat">
+                <p className="shop-hero-stat__value">
+                  {Math.max(categories.length - 1, 0)}
+                </p>
+                <p className="shop-hero-stat__label">Categories</p>
+              </div>
+              <div className="shop-hero-stat">
+                <p className="shop-hero-stat__value">
+                  {Math.max(availableTypes.length - 1, 0)}
+                </p>
+                <p className="shop-hero-stat__label">Types</p>
+              </div>
+              <div className="shop-hero-stat">
+                <p className="shop-hero-stat__value">{filteredItems.length}</p>
+                <p className="shop-hero-stat__label">Showing</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <section className="brand-card p-5 md:p-6 mb-6">
-          <h2 className="text-xl font-bold text-slate-800 mb-4">Categories</h2>
-          <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => updateFilter(cat, "All")}
-                className={`px-4 py-2 rounded-full border transition ${
-                  selectedCategory === cat
-                    ? "bg-cyan-700 text-white border-cyan-700"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                }`}>
-                {cat}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="brand-card p-5 md:p-6 mb-8">
-          <h2 className="text-xl font-bold text-slate-800 mb-4">Types</h2>
-          <div className="flex flex-wrap gap-3">
-            {availableTypes.map((type) => (
-              <button
-                key={type}
-                onClick={() => updateFilter(selectedCategory, type)}
-                className={`px-4 py-2 rounded-full border transition ${
-                  selectedType === type
-                    ? "bg-cyan-600 text-white border-cyan-600"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                }`}>
-                {type}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-black text-slate-800">Products</h2>
-            <p className="text-slate-500">{filteredItems.length} item(s)</p>
-          </div>
-
-          {loading ? (
-            <p className="text-slate-500 py-8">Loading products...</p>
-          ) : filteredItems.length === 0 ? (
-            <div className="brand-card p-8 text-center">
-              <p className="text-slate-600 mb-3">
-                No products found for this filter.
+        <section className="md:hidden shop-panel p-4 mb-5 rounded-2xl border border-slate-200 bg-white">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Filters</p>
+              <p className="text-xs text-slate-500">
+                {selectedCategory} / {selectedType}
               </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsFilterOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+              <i className="bi bi-sliders"></i>
+              Choose Category
+            </button>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] gap-6 md:gap-8">
+          <aside className="hidden md:block">
+            <div className="shop-filter-sidebar rounded-2xl border border-slate-200 bg-white p-5 sticky top-24">
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-200">
+                <i className="bi bi-funnel text-cyan-700"></i>
+                <h2 className="text-2xl font-black text-slate-900">Filters</h2>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-base font-bold text-slate-900 mb-3">
+                  Category
+                </p>
+                <div className="flex flex-col gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={`sidebar-cat-${cat}`}
+                      onClick={() => updateFilter(cat, "All")}
+                      className={`shop-filter-option ${
+                        selectedCategory === cat
+                          ? "shop-filter-option--active"
+                          : ""
+                      }`}>
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-base font-bold text-slate-900 mb-3">Types</p>
+                <div className="flex flex-wrap gap-2">
+                  {availableTypes.map((type) => (
+                    <button
+                      key={`sidebar-type-${type}`}
+                      onClick={() => updateFilter(selectedCategory, type)}
+                      className={`shop-filter-chip ${
+                        selectedType === type ? "shop-filter-chip--active" : ""
+                      }`}>
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <button
+                type="button"
                 onClick={() => updateFilter("All", "All")}
-                className="px-5 py-2 rounded-lg btn-primary transition">
+                className="w-full rounded-lg bg-cyan-700 text-white font-semibold py-2.5 hover:bg-cyan-800 transition">
                 Clear Filters
               </button>
             </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {filteredItems.map((item) => (
-                <article
-                  key={item.id}
-                  className="brand-card overflow-hidden transition duration-300">
-                  <div className="h-44 bg-slate-100">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full">
+          </aside>
+
+          <section id="shop-products">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-black text-slate-800">Products</h2>
+              <p className="text-slate-500">{filteredItems.length} item(s)</p>
+            </div>
+
+            {searchQuery ? (
+              <p className="text-slate-600 mb-4">
+                Search results for{" "}
+                <span className="font-semibold">"{searchQuery}"</span>
+              </p>
+            ) : null}
+
+            {loading ? (
+              <p className="text-slate-500 py-8">Loading products...</p>
+            ) : filteredItems.length === 0 ? (
+              <div className="shop-panel p-8 text-center rounded-2xl border border-slate-200 bg-white">
+                <p className="text-slate-600 mb-3">
+                  No products found for this filter.
+                </p>
+                <button
+                  onClick={() => updateFilter("All", "All")}
+                  className="px-5 py-2 rounded-lg btn-primary transition">
+                  Clear Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredItems.map((item) => (
+                  <article
+                    key={item.id}
+                    className="group shop-product-card rounded-2xl border border-slate-200 overflow-hidden bg-white transition duration-300">
+                    <div className="relative h-44 overflow-hidden shop-product-card__media">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Add to wishlist"
+                        className="absolute right-2 top-2 h-6 w-6 rounded-full bg-white/85 text-slate-500 grid place-items-center shop-product-card__fav">
+                        <i className="bi bi-heart"></i>
+                      </button>
+                      <span className="absolute left-2.5 bottom-2.5 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600 border border-slate-200">
                         {item.category}
                       </span>
-                      <span className="text-xs bg-teal-50 text-teal-700 px-2 py-1 rounded-full">
-                        {item.Type}
-                      </span>
                     </div>
-                    <h3 className="font-bold text-slate-800">{item.title}</h3>
-                    <p className="text-sm text-slate-600 mt-2 line-clamp-2">
-                      {item.content}
-                    </p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <p className="font-black text-teal-700">
-                        ${Number(item.price).toFixed(2)}
+
+                    <div className="p-3.5">
+                      <h3 className="font-bold text-sm line-clamp-1 text-slate-900">
+                        {item.title}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-[0.12em]">
+                        {item.Type || "Pet Supply"}
                       </p>
-                      <button
-                        onClick={() => handleBuy(item)}
-                        className="px-3 py-1.5 rounded-lg btn-primary transition text-sm font-semibold">
-                        Buy
-                      </button>
+                      <p className="text-xs text-slate-600 mt-1.5 h-8 overflow-hidden line-clamp-2 leading-relaxed">
+                        {item.content}
+                      </p>
+                      <div className="mt-3 flex items-center justify-between gap-2">
+                        <p className="text-base font-black text-slate-900">
+                          ${Number(item.price).toFixed(2)}
+                        </p>
+                        <button
+                          onClick={() => handleBuy(item)}
+                          className="shop-add-cart-btn rounded-md bg-slate-700 px-2 py-2 leading-none font-semibold text-white hover:bg-slate-800 transition whitespace-nowrap">
+                          Add to cart
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
 
         <div className="mt-10 text-center">
           <Link
@@ -201,6 +305,357 @@ export default function Shop() {
       </main>
 
       <Footer />
+
+      <div
+        className={`md:hidden fixed inset-0 z-70 transition-opacity duration-200 ${
+          isFilterOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}>
+        <button
+          type="button"
+          aria-label="Close filters"
+          onClick={() => setIsFilterOpen(false)}
+          className="absolute inset-0 bg-slate-900/45"></button>
+
+        <aside
+          className={`absolute right-0 top-0 h-full w-[86%] max-w-sm bg-white border-l border-slate-200 p-5 overflow-y-auto transition-transform duration-300 ${
+            isFilterOpen ? "translate-x-0" : "translate-x-full"
+          }`}>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-black text-slate-900">
+              Choose Filters
+            </h3>
+            <button
+              type="button"
+              onClick={() => setIsFilterOpen(false)}
+              className="h-9 w-9 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-50">
+              <i className="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div className="offcanvas-layout mb-6">
+            <div className="offcanvas-left-menu">
+              <p className="text-sm font-bold text-slate-900 mb-2">
+                Categories
+              </p>
+              <div className="offcanvas-left-menu-list">
+                {categories.map((cat) => (
+                  <button
+                    key={`mobile-cat-${cat}`}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`offcanvas-left-menu-item ${
+                      selectedCategory === cat
+                        ? "offcanvas-left-menu-item--active"
+                        : ""
+                    }`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="offcanvas-right-panel">
+              <p className="text-sm font-bold text-slate-900 mb-2">Types</p>
+              <div className="offcanvas-menu-list">
+                {availableTypes.map((type) => (
+                  <button
+                    key={`mobile-type-${type}`}
+                    onClick={() => handleTypeSelect(type)}
+                    className={`offcanvas-menu-item ${
+                      selectedType === type ? "offcanvas-menu-item--active" : ""
+                    }`}>
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              updateFilter("All", "All");
+              setIsFilterOpen(false);
+            }}
+            className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            Clear All Filters
+          </button>
+        </aside>
+      </div>
+
+      <style>{`
+        .shop-hero {
+          background: linear-gradient(140deg, #0f766e 0%, #0f172a 70%);
+        }
+
+        .shop-hero-blob {
+          position: absolute;
+          border-radius: 999px;
+          filter: blur(16px);
+          opacity: 0.45;
+          pointer-events: none;
+        }
+
+        .shop-hero-blob--one {
+          width: 210px;
+          height: 210px;
+          right: -30px;
+          top: -30px;
+          background: radial-gradient(circle, rgba(103, 232, 249, 0.7) 0%, rgba(103, 232, 249, 0) 70%);
+          animation: heroFloat 7s ease-in-out infinite;
+        }
+
+        .shop-hero-blob--two {
+          width: 180px;
+          height: 180px;
+          left: 25%;
+          bottom: -55px;
+          background: radial-gradient(circle, rgba(45, 212, 191, 0.55) 0%, rgba(45, 212, 191, 0) 70%);
+          animation: heroFloat 8.5s ease-in-out infinite reverse;
+        }
+
+        .shop-hero-badge,
+        .shop-hero-title,
+        .shop-hero-text {
+          animation: heroReveal 0.6s ease both;
+        }
+
+        .shop-hero-title {
+          animation-delay: 80ms;
+        }
+
+        .shop-hero-text {
+          animation-delay: 160ms;
+        }
+
+        .shop-hero-stat {
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          border-radius: 14px;
+          padding: 14px;
+          animation: heroReveal 0.6s ease both;
+          backdrop-filter: blur(2px);
+        }
+
+        .shop-hero-stat:nth-child(1) { animation-delay: 120ms; }
+        .shop-hero-stat:nth-child(2) { animation-delay: 180ms; }
+        .shop-hero-stat:nth-child(3) { animation-delay: 240ms; }
+        .shop-hero-stat:nth-child(4) { animation-delay: 300ms; }
+
+        .shop-hero-stat__value {
+          font-size: 30px;
+          line-height: 1;
+          font-weight: 900;
+          color: #ffffff;
+        }
+
+        .shop-hero-stat__label {
+          margin-top: 6px;
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #ccfbf1;
+        }
+
+        @keyframes heroReveal {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes heroFloat {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        .shop-product-card {
+          box-shadow: none !important;
+        }
+
+        .shop-product-card:hover {
+          box-shadow: none !important;
+        }
+
+        .shop-product-card__media {
+          background: linear-gradient(160deg, #c7b6f4 0%, #a78bfa 100%);
+        }
+
+        .shop-product-card__fav {
+          border: 1px solid rgba(148, 163, 184, 0.35);
+          transition: transform 0.2s ease, background-color 0.2s ease,
+            color 0.2s ease;
+        }
+
+        .shop-product-card:hover .shop-product-card__fav {
+          transform: scale(1.08);
+          background-color: #ffffff;
+          color: #7c3aed;
+        }
+
+        .shop-add-cart-btn {
+          font-size: 13px !important;
+          line-height: 1 !important;
+        }
+
+        .shop-filter-option {
+          width: 100%;
+          text-align: left;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          padding: 9px 10px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #334155;
+          background: #ffffff;
+          transition: all 0.2s ease;
+        }
+
+        .shop-filter-option:hover {
+          border-color: #cbd5e1;
+          background: #f8fafc;
+          color: #1e293b;
+        }
+
+        .shop-filter-option--active {
+          border-color: #0891b2;
+          background: #ecfeff;
+          color: #0e7490;
+        }
+
+        .shop-filter-chip {
+          border: 1px solid #cbd5e1;
+          border-radius: 999px;
+          padding: 6px 12px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #475569;
+          background: #ffffff;
+          transition: all 0.2s ease;
+        }
+
+        .shop-filter-chip:hover {
+          border-color: #94a3b8;
+          background: #f8fafc;
+          color: #334155;
+        }
+
+        .shop-filter-chip--active {
+          border-color: #0e7490;
+          background: #0e7490;
+          color: #ffffff;
+        }
+
+        .offcanvas-layout {
+          display: flex;
+          align-items: stretch;
+          gap: 12px;
+          min-height: 260px;
+        }
+
+        .offcanvas-left-menu {
+          width: 40%;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px;
+        }
+
+        .offcanvas-left-menu-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .offcanvas-left-menu-item {
+          width: 100%;
+          text-align: left;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          padding: 8px 10px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #334155;
+          background: transparent;
+          transition: all 0.2s ease;
+        }
+
+        .offcanvas-left-menu-item--active {
+          border-color: #0891b2;
+          background: #ecfeff;
+          color: #0e7490;
+        }
+
+        .offcanvas-left-menu-item:hover {
+          background: #ffffff;
+          color: #1e293b;
+        }
+
+        .offcanvas-right-panel {
+          width: 60%;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px;
+        }
+
+        .offcanvas-menu-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .offcanvas-menu-item {
+          border: 0;
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 15px;
+          font-weight: 600;
+          color: #1e293b;
+          background: transparent;
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .offcanvas-menu-item:hover {
+          background: #ffffff;
+          color: #1e293b;
+        }
+
+        .offcanvas-menu-item--active {
+          background: #0e7490;
+          color: #ffffff;
+        }
+
+        .shop-filter-option,
+        .shop-filter-chip,
+        .offcanvas-left-menu-item,
+        .offcanvas-menu-item {
+          -webkit-text-fill-color: currentColor;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .shop-hero-blob,
+          .shop-hero-badge,
+          .shop-hero-title,
+          .shop-hero-text,
+          .shop-hero-stat {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -112,7 +112,7 @@ export default function Checkout() {
           <p className="uppercase tracking-[0.15em] text-sm text-teal-100 mb-3">
             Secure Checkout
           </p>
-          <h1 className="text-3xl md:text-5xl font-black">Payment</h1>
+          <h1 className="text-2xl md:text-3xl font-black">Payment</h1>
           <p className="mt-3 text-teal-50">
             Complete your order safely in this frontend demo checkout.
           </p>
@@ -136,7 +136,7 @@ export default function Checkout() {
           </div>
         ) : paid ? (
           <div className="brand-card p-8 text-center">
-            <h2 className="text-3xl font-black text-teal-700 mb-3">
+            <h2 className="text-2xl font-black text-teal-700 mb-3">
               Payment Successful
             </h2>
             <p className="text-slate-600 mb-6">

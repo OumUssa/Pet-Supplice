@@ -18,7 +18,7 @@ const Contact = () => {
       <Header />
 
       <div className="site-shell text-slate-800">
-        <section className="relative overflow-hidden bg-gradient-to-r from-teal-700 via-cyan-700 to-sky-700 text-white py-16 md:py-20">
+        <section className="relative overflow-hidden bg-[linear-gradient(140deg,#0f766e_0%,#0f172a_70%)] text-white py-16 md:py-20">
           <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
           <div className="absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
 
@@ -26,14 +26,14 @@ const Contact = () => {
             <p className="uppercase tracking-[0.18em] text-cyan-100 text-sm mb-3 fade-up">
               Contact PETZONE
             </p>
-            <h1 className="text-4xl md:text-6xl font-black max-w-3xl leading-tight fade-up">
+            <h1 className="text-2xl md:text-4xl font-black max-w-3xl leading-tight fade-up">
               Let&apos;s Talk About Your Pet Care Needs
             </h1>
             <p
               className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up"
               style={{ animationDelay: "120ms" }}>
-              Ask about products, orders, services, or support. Our team is
-              ready to help you quickly.
+              Ask about products, orders, or support. Our team is ready to help
+              you quickly.
             </p>
           </div>
         </section>
@@ -41,7 +41,7 @@ const Contact = () => {
         <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14">
           <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
             <aside className="lg:col-span-2 space-y-5">
-              <div className="brand-card p-5 fade-up">
+              <div className="brand-card contact-flat p-5 fade-up">
                 <div className="flex items-center gap-3 mb-2">
                   <Phone className="w-5 h-5 text-cyan-700" />
                   <h3 className="font-bold text-lg">Phone</h3>
@@ -53,7 +53,7 @@ const Contact = () => {
               </div>
 
               <div
-                className="brand-card p-5 fade-up"
+                className="brand-card contact-flat p-5 fade-up"
                 style={{ animationDelay: "90ms" }}>
                 <div className="flex items-center gap-3 mb-2">
                   <Mail className="w-5 h-5 text-cyan-700" />
@@ -66,7 +66,7 @@ const Contact = () => {
               </div>
 
               <div
-                className="brand-card p-5 fade-up"
+                className="brand-card contact-flat p-5 fade-up"
                 style={{ animationDelay: "180ms" }}>
                 <div className="flex items-center gap-3 mb-2">
                   <MapPin className="w-5 h-5 text-cyan-700" />
@@ -79,7 +79,7 @@ const Contact = () => {
               </div>
 
               <div
-                className="brand-card bg-slate-900 text-white p-5 fade-up"
+                className="brand-card contact-flat contact-hours-card text-white p-5 fade-up"
                 style={{ animationDelay: "270ms" }}>
                 <div className="flex items-center gap-3 mb-2">
                   <Clock3 className="w-5 h-5 text-emerald-300" />
@@ -91,7 +91,7 @@ const Contact = () => {
             </aside>
 
             <section
-              className="lg:col-span-3 brand-card p-6 md:p-8 fade-up"
+              className="lg:col-span-3 brand-card contact-flat p-6 md:p-8 fade-up"
               style={{ animationDelay: "120ms" }}>
               <h2 className="text-2xl md:text-3xl font-black text-slate-800 mb-2">
                 Send Us A Message
@@ -166,10 +166,10 @@ const Contact = () => {
                   </button>
 
                   <Link
-                    to="/services"
+                    to="/shop"
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-slate-700 font-semibold hover:bg-slate-100 transition">
                     <MessageCircle className="w-4 h-4" />
-                    View Services
+                    Browse Shop
                   </Link>
                 </div>
               </form>
@@ -177,7 +177,7 @@ const Contact = () => {
           </div>
 
           <section
-            className="mt-10 brand-card p-6 md:p-8 fade-up"
+            className="mt-10 brand-card contact-flat p-6 md:p-8 fade-up"
             style={{ animationDelay: "220ms" }}>
             <div className="flex items-start gap-3 text-slate-700">
               <ShieldCheck className="w-5 h-5 mt-1 text-emerald-600" />
@@ -193,6 +193,18 @@ const Contact = () => {
         </main>
 
         <style>{`
+          .contact-flat,
+          .contact-flat:hover {
+            border: 0 !important;
+            box-shadow: none !important;
+            transform: none !important;
+          }
+
+          .contact-hours-card {
+            background: #0f172a !important;
+            color: #ffffff !important;
+          }
+
           .fade-up {
             animation: fadeUp 0.7s ease both;
           }

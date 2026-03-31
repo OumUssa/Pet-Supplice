@@ -11,7 +11,6 @@ import UpdateStore from "./components/Dashboard/UpdateStore";
 import AboutUs from "./components/Dashboard/AboutUs";
 import Contact from "./components/Dashboard/contact";
 import Shop from "./pages/Shop";
-import Services from "./pages/Services";
 import Checkout from "./pages/Checkout";
 
 export const router = createBrowserRouter([
@@ -52,14 +51,6 @@ export const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <Shop />
-      </AuthGuard>
-    ),
-  },
-  {
-    path: "/services",
-    element: (
-      <AuthGuard>
-        <Services />
       </AuthGuard>
     ),
   },
