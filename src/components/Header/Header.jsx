@@ -1,14 +1,20 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "../Header/Header.css";
 const Header = () => {
-  const pettoken=localStorage.getItem("tokenPet")
-  
+  const pettoken = localStorage.getItem("tokenPet");
+  const navClass = ({ isActive }) =>
+    `text-gray-700 navbar-link font-extrabold block px-5 py-3 transition-all duration-200 ${
+      isActive
+        ? "hvr-underline-from-left navbar-link-active"
+        : "hvr-underline-from-left hover:text-cyan-600"
+    }`;
+
   return (
-    <header className="bg-white shadow-md">
+    <header className="relative z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-cyan-100">
       <div className="w-full flex items-center justify-between py-4 px-20">
         {/* Logo */}
-        <div className="flex items-center justify-center h-24 w-24 border ">
+        <div className="flex items-center justify-center h-24 w-24 ">
           <a href="" className="w-full h-full relative ">
             <img
               src="/image/logo.png"
@@ -20,36 +26,46 @@ const Header = () => {
 
         <div className="flex items-center justify-around space-x-4">
           {/* Right side: search + user links */}
-          <div className="flex items-center text-black space-x-2 bg-gray-100 px-3 py-2 rounded-lg transition-all duration-300 focus-within:shadow-md focus-within:ring-2 focus-within:ring-blue-400">
-            <i className="bi bi-search text-gray-500 text-xl"></i>
+          <div className="header-search flex items-center">
+            <i className="header-search__icon bi bi-search"></i>
             <input
               type="text"
               placeholder="Search for pets"
               aria-label="Search for pets"
-              className="bg-gray-100 outline-none text-sm w-75 transition-all duration-300 focus:w-75"
+              className="header-search__input"
             />
           </div>
 
           {/* User Links */}
-          <div className="flex items-center space-x-4 text-blue-600">
-            { !pettoken? <div>
-              <Link
-                to="/signIn"
-                className="text-base btn hvr-underline-from-left py-1">
-                Login
-              </Link>
-              <span className="mx-3">/</span>
-              <Link to="/Register" className="hvr-underline-from-left btn py-1">
-                register
-              </Link>
-            </div>:false}
-            {pettoken? <div>
-              <Link
-                to="/DashboardView"
-                className="text-base btn hvr-underline-from-left py-1">
-                Dashboard
-              </Link>
-            </div>:false}
+          <div className="flex items-center space-x-4 text-cyan-700">
+            {!pettoken ? (
+              <div>
+                <Link
+                  to="/signin"
+                  className="text-base btn hvr-underline-from-left py-1">
+                  Login
+                </Link>
+                <span className="mx-3">/</span>
+                <Link
+                  to="/register"
+                  className="hvr-underline-from-left btn py-1">
+                  register
+                </Link>
+              </div>
+            ) : (
+              false
+            )}
+            {pettoken ? (
+              <div>
+                <Link
+                  to="/DashboardView"
+                  className="text-base btn hvr-underline-from-left py-1">
+                  Dashboard
+                </Link>
+              </div>
+            ) : (
+              false
+            )}
             <div className="flex items-center h-auto">
               <a href="#">
                 <i className="bi bi-person-fill text-3xl"></i>
@@ -67,26 +83,22 @@ const Header = () => {
         </div>
       </div>
 
-      <nav className="w-full py-1 border-t border-gray-200 bg-white">
+      <nav className="relative z-50 w-full py-1 border-t border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-center items-center py-3">
             <ul className="hidden md:flex space-x-25">
               <li>
-                <Link to="/"
-                  className="text-gray-700 hvr-underline-from-left navbar-link font-extrabold block px-5 py-3 hover:text-blue-600"
-                  href="#">
+                <NavLink to="/" end className={navClass}>
                   Home
-                </Link>
+                </NavLink>
               </li>
               <li className="relative group">
-                <a
-                  href="#"
-                  className="py-3 hvr-underline-from-left navbar-link font-extrabold block px-5 hover:text-blue-600">
+                <NavLink to="/shop" className={navClass}>
                   Shop <i className="bi bi-caret-down-fill ms-1"></i>
-                </a>
+                </NavLink>
 
                 <ul
-                  className="z-1000
+                  className="z-999
       absolute left-0 mt-2 bg-white shadow-lg border rounded-md w-48 pb-2
       opacity-0 invisible
       transform origin-top scale-y-0
@@ -95,14 +107,16 @@ const Header = () => {
     ">
                   {/* 🐶 Dogs */}
                   <li className="relative group/item">
-                    <a className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
-                      🐶 Dogs
+                    <Link
+                      to="/shop?category=Dog"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                      Dogs
                       <i className="bi bi-caret-right-fill"></i>
-                    </a>
+                    </Link>
 
                     {/* Dogs Submenu */}
                     <ul
-                      className="
+                      className="z-1000
           absolute left-44 top-0 ml-1 bg-white shadow-md border rounded-md w-54 py-2
           opacity-0 invisible
           transform origin-top scale-y-0
@@ -110,37 +124,47 @@ const Header = () => {
           transition-all duration-400 ease-out
         ">
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Dog&type=Food"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Food
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Dog&type=Toys"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Toys
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Dog&type=Accessories"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Accessories
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Dog&type=Health%20%26%20Care"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Health & Care
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
 
                   {/* 🐱 Cats */}
                   <li className="relative group/item">
-                    <a className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
-                      🐱 Cats
+                    <Link
+                      to="/shop?category=Cat"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                      Cats
                       <i className="bi bi-caret-right-fill"></i>
-                    </a>
+                    </Link>
 
                     <ul
-                      className="
+                      className="z-1000
           absolute left-44 top-0 ml-1 bg-white shadow-md border rounded-md w-54 py-2
           opacity-0 invisible
           transform origin-top scale-y-0
@@ -148,37 +172,47 @@ const Header = () => {
           transition-all duration-400 ease-out
         ">
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Cat&type=Food"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Food
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Cat&type=Toys"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Toys
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Cat&type=Litter%20%26%20Hygiene"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Litter & Hygiene
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Cat&type=Accessories"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Accessories
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
 
                   {/* 🐦 Birds */}
                   <li className="relative group/item">
-                    <a className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
-                      🐦 Birds
+                    <Link
+                      to="/shop?category=Bird"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                      Birds
                       <i className="bi bi-caret-right-fill"></i>
-                    </a>
+                    </Link>
 
                     <ul
-                      className="
+                      className="z-1000
           absolute left-44 top-0 ml-1 bg-white shadow-md border rounded-md w-54 py-2
           opacity-0 invisible
           transform origin-top scale-y-0
@@ -186,32 +220,40 @@ const Header = () => {
           transition-all duration-400 ease-out
         ">
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Bird&type=Food"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Food
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Bird&type=Cages"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Cages
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Bird&type=Toys"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Toys
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
 
                   {/* 🐠 Fish */}
                   <li className="relative group/item">
-                    <a className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
-                      🐠 Fish
+                    <Link
+                      to="/shop?category=Fish"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                      Fish
                       <i className="bi bi-caret-right-fill"></i>
-                    </a>
+                    </Link>
 
                     <ul
-                      className="
+                      className="z-1000
           absolute left-44 top-0 ml-1 bg-white shadow-md border rounded-md w-54 py-2
           opacity-0 invisible
           transform origin-top scale-y-0
@@ -219,32 +261,40 @@ const Header = () => {
           transition-all duration-400 ease-out
         ">
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Fish&type=Food"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Fish Food
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Fish&type=Aquariums"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Aquariums
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Fish&type=Filters%20%26%20Pumps"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Filters & Pumps
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
 
                   {/* 🐹 Small Pets */}
                   <li className="relative group/item">
-                    <a className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
-                      🐹 Small Pets
+                    <Link
+                      to="/shop?category=Small%20Pet"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                      Small Pets
                       <i className="bi bi-caret-right-fill"></i>
-                    </a>
+                    </Link>
 
                     <ul
-                      className="
+                      className="z-1000
           absolute left-44 top-0 ml-1 bg-white shadow-md border rounded-md w-54 py-2
           opacity-0 invisible
           transform origin-top scale-y-0
@@ -252,24 +302,32 @@ const Header = () => {
           transition-all duration-400 ease-out
         ">
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Small%20Pet&type=Food"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Food
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Small%20Pet&type=Cages"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Cages
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Small%20Pet&type=Bedding"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Bedding
-                        </a>
+                        </Link>
                       </li>
                       <li>
-                        <a className="block px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          to="/shop?category=Small%20Pet&type=Toys"
+                          className="block px-4 py-2 hover:bg-gray-100">
                           Toys
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
@@ -277,25 +335,19 @@ const Header = () => {
               </li>
 
               <li>
-                <a
-                  className="text-gray-700 hvr-underline-from-left navbar-link font-extrabold block px-5  py-3 hover:text-blue-600"
-                  href="#">
+                <NavLink to="/services" className={navClass}>
                   Services
-                </a>
+                </NavLink>
               </li>
               <li>
-                <Link to="/about"
-                  className="text-gray-700 hvr-underline-from-left navbar-link font-extrabold block px-5  py-3 hover:text-blue-600"
-                  href="#">
+                <NavLink to="/about" className={navClass}>
                   About
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/contact"
-                  className="text-gray-700 hvr-underline-from-left navbar-link font-extrabold block px-5  py-3 hover:text-blue-600"
-                  href="#">
+                <NavLink to="/contact" className={navClass}>
                   Contact
-                </Link>
+                </NavLink>
               </li>
             </ul>
 

@@ -1,29 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userStore } from "../../store/RegisterStore";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState({ email: "", password: "" });
 
-  // Modals
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
 
-  // Forgot password
   const [forgotEmail, setForgotEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [forgotError, setForgotError] = useState("");
 
-  // Sign up
-  const [signupForm, setSignupForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [signupError, setSignupError] = useState("");
+  useEffect(() => {
+    const token = localStorage.getItem("tokenPet");
+    if (token) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
 
   // Handle input change for login
   const handleChange = (e) => {
@@ -51,14 +45,19 @@ export default function LoginForm() {
     if (!validate()) return;
 
     try {
-      const data = await userStore.getUser();
+      const data = (await userStore.getUser()) || [];
+      const inputEmail = form.email.trim().toLowerCase();
+      const inputPassword = form.password;
+
       const user = data.find(
-        (el) => el.email === form.email && el.password === form.password
+        (el) =>
+          (el.email || "").trim().toLowerCase() === inputEmail &&
+          el.password === inputPassword,
       );
 
       if (user) {
         localStorage.setItem("tokenPet", user.id);
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         setError((prev) => ({ ...prev, password: "Invalid credentials" }));
       }
@@ -79,7 +78,9 @@ export default function LoginForm() {
       if (user) {
         setForgotError("");
         setShowForgotModal(false);
-        setShowResetModal(true);
+        alert(
+          "Email verified. Please create a new account password in register page.",
+        );
       } else {
         setForgotError("Email not found!");
       }
@@ -89,147 +90,138 @@ export default function LoginForm() {
     }
   };
 
-  // Reset password using Supabase
-  const handleResetPassword = async () => {
-    if (!newPassword.trim()) return;
-    try {
-      const updated = await userStore.resetPassword(forgotEmail, newPassword);
-      if (updated) {
-        alert("Password updated successfully!");
-        setShowResetModal(false);
-        setForgotEmail("");
-        setNewPassword("");
-      } else {
-        alert("Failed to reset password.");
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Signup input change
-  const handleSignupChange = (e) => {
-    const { name, value } = e.target;
-    setSignupForm((prev) => ({ ...prev, [name]: value }));
-    if (value.trim() !== "") setSignupError("");
-  };
-
-  // Handle signup
-  const handleSignup = async () => {
-    const { name, email, password } = signupForm;
-    if (!name || !email || !password) {
-      setSignupError("All fields are required!");
-      return;
-    }
-    try {
-      const existing = await userStore.getUser();
-      if (existing.find((el) => el.email === email)) {
-        setSignupError("Email already registered!");
-        return;
-      }
-      const created = await userStore.createUser(signupForm);
-      if (created) {
-        alert("Account created successfully!");
-        setShowSignupModal(false);
-        setSignupForm({ name: "", email: "", password: "" });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-            Login
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-6 text-blue-500">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 transition"
-                placeholder="Enter your email"
+    <div className="site-shell min-h-screen px-4 py-6 md:py-10 flex items-center">
+      <main className="max-w-5xl mx-auto w-full">
+        <section className="grid lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(2,132,199,0.14)]">
+          <div className="relative p-8 md:p-11 bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900 flex flex-col text-white">
+            <div className="mb-30 relative">
+              <img
+                src="/image/logo.png"
+                alt="PETZONE Logo"
+                className="h-45 object-contain absolute -top-10 -left-15"
               />
-              {error.email && (
-                <div className="text-red-500 mt-1">{error.email}</div>
-              )}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 transition"
-                placeholder="Enter your password"
-              />
-              {error.password && (
-                <div className="text-red-500 mt-1">{error.password}</div>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+            <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
               Sign In
-            </button>
-          </form>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black leading-tight text-white drop-shadow-sm">
+              Welcome to my website
+            </h1>
+            <p className="mt-3 max-w-md text-slate-100/90 leading-relaxed">
+              Access your account to manage orders, discover pet essentials, and
+              continue where you left off.
+            </p>
 
-          <div className="flex justify-between mt-4">
-            <button
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => setShowForgotModal(true)}>
-              Forgot Password?
-            </button>
-
-            <button
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => {
-                setShowSignupModal(false);
-                navigate("/register");
-              }}>
-              Create Account
-            </button>
+            <div className="mt-10 grid gap-3 max-w-md">
+              <div className="rounded-2xl border border-white/30 bg-white/10 px-4 py-3 shadow-sm hover:shadow-md transition backdrop-blur">
+                <p className="font-semibold text-white">Fast access</p>
+                <p className="text-sm text-slate-100/90">
+                  Quick login and smooth navigation.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/30 bg-white/10 px-4 py-3 shadow-sm hover:shadow-md transition backdrop-blur">
+                <p className="font-semibold text-white">
+                  Pet-focused experience
+                </p>
+                <p className="text-sm text-slate-100/90">
+                  Everything designed for pet owners.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div className="p-8 md:p-10 bg-white flex flex-col justify-start">
+            <h2 className="text-2xl font-black text-slate-800">
+              Login Account
+            </h2>
+            <p className="text-slate-500 mt-1 mb-6">
+              Enter your details to continue.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  placeholder="Enter your email"
+                />
+                {error.email && (
+                  <div className="text-red-500 mt-1 text-sm">{error.email}</div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Password
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  placeholder="Enter your password"
+                />
+                {error.password && (
+                  <div className="text-red-500 mt-1 text-sm">
+                    {error.password}
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full btn-primary py-3 px-4 rounded-xl transition font-semibold">
+                Sign In
+              </button>
+            </form>
+
+            <div className="mt-5 flex items-center justify-between text-sm">
+              <button
+                className="text-cyan-700 hover:underline"
+                onClick={() => setShowForgotModal(true)}>
+                Forgot Password?
+              </button>
+              <button
+                className="text-cyan-700 hover:underline"
+                onClick={() => navigate("/register")}>
+                Create Account
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 flex items-center justify-center  z-50 text-gray-700">
-          <div className="bg-white rounded-lg p-6 w-full max-w-sm border absolute">
-            <h3 className="text-xl font-bold mb-4">Verify Email</h3>
+        <div className="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-sm flex items-center justify-center text-slate-700 px-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm border border-teal-100 shadow-2xl">
+            <h3 className="text-xl font-black mb-4">Verify Email</h3>
             <input
               type="email"
               value={forgotEmail}
               onChange={(e) => setForgotEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-lg mb-2"
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-xl mb-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             {forgotError && (
               <div className="text-red-500 mb-2">{forgotError}</div>
             )}
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                className="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300"
                 onClick={() => setShowForgotModal(false)}>
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 btn-primary rounded-lg"
                 onClick={handleVerifyEmail}>
                 Verify
               </button>

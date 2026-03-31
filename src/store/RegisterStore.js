@@ -1,85 +1,82 @@
-// const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-// const VITE_SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const USERS_KEY = "petstore_users";
+
+const defaultUsers = [
+  {
+    id: "u-1",
+    name: "Demo User",
+    email: "demo@petstore.com",
+    password: "123456",
+  },
+];
+
+function safeParse(value, fallback) {
+  try {
+    return JSON.parse(value ?? "");
+  } catch {
+    return fallback;
+  }
+}
+
+function readUsers() {
+  const stored = safeParse(localStorage.getItem(USERS_KEY), null);
+
+  if (Array.isArray(stored) && stored.length > 0) {
+    return stored;
+  }
+
+  localStorage.setItem(USERS_KEY, JSON.stringify(defaultUsers));
+  return [...defaultUsers];
+}
+
+function writeUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
 
 export const userStore = {
   getUser: async () => {
-    try {
-      const res = await fetch(
-        `https://vskxtvhciaoavdosxujo.supabase.co/rest/v1/register`,
-        {
-          method: "GET",
-          headers: {
-            apikey: "sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-",
-            Authorization: `Bearer sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      return null;
-    }
+    return readUsers();
   },
+
   createUser: async (user) => {
-    try {
-      // user = { name: "", email: "", password: "" } (raw)
-      const res = await fetch(
-        `https://vskxtvhciaoavdosxujo.supabase.co/rest/v1/register`,
-        {
-          method: "POST",
-          headers: {
-            apikey: "sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-",
-            Authorization: `Bearer sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-`,
-            "Content-Type": "application/json",
-            Prefer: "return=representation", // return created row
-          },
-          body: JSON.stringify(user), // raw JSON body
-        }
-      );
+    const users = readUsers();
+    const email = (user?.email || "").trim().toLowerCase();
 
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error("Error creating user:", error);
+    if (!email) {
       return null;
     }
+
+    const exists = users.some((u) => u.email.toLowerCase() === email);
+    if (exists) {
+      return null;
+    }
+
+    const newUser = {
+      id: `u-${Date.now()}`,
+      name: user?.name || "",
+      email,
+      password: user?.password || "",
+    };
+
+    const updated = [...users, newUser];
+    writeUsers(updated);
+    return [newUser];
   },
 
+  resetPassword: async (email, newPassword) => {
+    const users = readUsers();
+    const targetEmail = (email || "").trim().toLowerCase();
+    const index = users.findIndex((u) => u.email.toLowerCase() === targetEmail);
 
-  
- resetPassword: async (email, newPassword) => {
-    try {
-      const res = await fetch(
-        `https://vskxtvhciaoavdosxujo.supabase.co/rest/v1/register?email=eq.${email}`,
-        {
-          method: "PATCH",
-          headers: {
-            apikey: "sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-",
-            Authorization: `Bearer sb_publishable_ob0ofkfPJrZF9BRZ5zrSIQ_gEiIsBF-`,
-            "Content-Type": "application/json",
-            Prefer: "return=representation",
-          },
-          body: JSON.stringify({ password: newPassword }),
-        }
-      );
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-      const data = await res.json();
-      return data; // Returns the updated user row
-    } catch (error) {
-      console.error("Error resetting password:", error);
+    if (index === -1) {
       return null;
     }
+
+    users[index] = {
+      ...users[index],
+      password: newPassword,
+    };
+
+    writeUsers(users);
+    return [users[index]];
   },
 };
-  

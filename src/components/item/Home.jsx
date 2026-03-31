@@ -1,170 +1,129 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getPetSupplies } from "../../store/suppliesStore.";
+import { useNavigate } from "react-router-dom";
 
-const slides = [
+const heroSlides = [
   {
-    subtitle: "Up to",
-    title: "45% OFF",
-    desc: "Thousands of pet favourites",
-    image: "/image/download-Photoroom.png",
-    bg: "bg-blue-200", // Soft Blue
+    badge: "Spring Collection",
+    title: "Healthy Picks For Happy Pets",
+    text: "Shop curated essentials for dogs, cats, birds, fish, and small pets in one clean experience.",
+    image:
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    subtitle: "Special Offer",
-    title: "30% OFF",
-    desc: "Healthy food for your pets",
-    image: "/image/download-Photoroom (1).png",
-    bg: "bg-green-200", // Soft Green
+    badge: "New Arrivals",
+    title: "Smarter Daily Care Starts Here",
+    text: "From premium food to playful toys, discover products built for comfort and wellness.",
+    image:
+      "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    subtitle: "Limited Time",
-    title: "Buy 1 Get 1",
-    desc: "Toys & accessories",
-    image: "/image/Kediler-Photoroom.png",
-    bg: "bg-purple-200", // Soft Purple
+    badge: "Top Rated",
+    title: "Trusted Products, Fast Browsing",
+    text: "A modern storefront with smooth motion and clear categories so users find what they need faster.",
+    image:
+      "https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=1200&q=80",
   },
 ];
-const categories = [
-    {
-      name: 'Dog Food',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M9,2V8H11V11H5C3.89,11 3,11.89 3,13V16H1V22H7V16H5V13H11V16H9V22H15V16H13V13H19V16H17V22H23V16H21V13A2,2 0 0,0 19,11H13V8H15V2H9Z" />
-        </svg>
-      ),
-      bgColor: 'bg-blue-50'
-    },
-    {
-      name: 'Cat Food',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
-        </svg>
-      ),
-      bgColor: 'bg-purple-50'
-    },
-    {
-      name: 'Treats',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M5.5,2C3.56,2 2,3.56 2,5.5C2,7.44 3.56,9 5.5,9C7.44,9 9,7.44 9,5.5C9,3.56 7.44,2 5.5,2M18.5,2C16.56,2 15,3.56 15,5.5C15,7.44 16.56,9 18.5,9C20.44,9 22,7.44 22,5.5C22,3.56 20.44,2 18.5,2M5.5,11C3.56,11 2,12.56 2,14.5C2,16.44 3.56,18 5.5,18C7.44,18 9,16.44 9,14.5C9,12.56 7.44,11 5.5,11M18.5,11C16.56,11 15,12.56 15,14.5C15,16.44 16.56,18 18.5,18C20.44,18 22,16.44 22,14.5C22,12.56 20.44,11 18.5,11M12,16C10.06,16 8.5,17.56 8.5,19.5C8.5,21.44 10.06,23 12,23C13.94,23 15.5,21.44 15.5,19.5C15.5,17.56 13.94,16 12,16Z" />
-        </svg>
-      ),
-      bgColor: 'bg-yellow-50'
-    },
-    {
-      name: 'Trees & Scratchers',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z" />
-        </svg>
-      ),
-      bgColor: 'bg-green-50'
-    },
-    {
-      name: 'Toys',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
-        </svg>
-      ),
-      bgColor: 'bg-pink-50'
-    },
-    {
-      name: 'Bowls & Dishes',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M2,15V17H22V15H2M4,19V21H20V19H4M2,11H22C22,9.9 21.1,9 20,9H16C16,7.9 15.1,7 14,7H10C8.9,7 8,7.9 8,9H4C2.9,9 2,9.9 2,11M4,13H20V11H4V13Z" />
-        </svg>
-      ),
-      bgColor: 'bg-orange-50'
-    },
-    {
-      name: 'Carriers',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18.5,4L19.66,8.35L18.7,8.61C18.25,7.74 17.79,6.87 17.26,6.43C16.73,6 16.11,6 15.5,6H13V16.5C13,17 13,17.5 13.33,17.75C13.67,18 14.33,18 15,18V19H9V18C9.67,18 10.33,18 10.67,17.75C11,17.5 11,17 11,16.5V6H8.5C7.89,6 7.27,6 6.74,6.43C6.21,6.87 5.75,7.74 5.3,8.61L4.34,8.35L5.5,4H18.5Z" />
-        </svg>
-      ),
-      bgColor: 'bg-indigo-50'
-    },
-    {
-      name: 'Litter & Litter Box',
-      icon: (
-        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M5,3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H17V17H7V15Z" />
-        </svg>
-      ),
-      bgColor: 'bg-gray-50'
-    }
-  ]
-const handleClick = (name) => {
-  console.log(`Clicked on ${name} category`);
-};
 
-function HeroSlider() {
+const categoryCards = [
+  {
+    name: "Dog",
+    desc: "Food, toys, accessories, and daily care essentials.",
+    tone: "from-cyan-100 to-sky-50",
+  },
+  {
+    name: "Cat",
+    desc: "Comfort, nutrition, and fun for indoor and outdoor cats.",
+    tone: "from-amber-100 to-orange-50",
+  },
+  {
+    name: "Bird",
+    desc: "Balanced feed, cages, and enrichment products.",
+    tone: "from-lime-100 to-emerald-50",
+  },
+  {
+    name: "Fish",
+    desc: "Aquarium kits, filters, and healthy food blends.",
+    tone: "from-blue-100 to-indigo-50",
+  },
+  {
+    name: "Small Pet",
+    desc: "Bedding, toys, tunnels, and habitat support.",
+    tone: "from-rose-100 to-pink-50",
+  },
+];
+
+function Hero({ onShopNow, onExploreCategories }) {
   const [index, setIndex] = useState(0);
 
-  // Auto slide every 4 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 4500);
+
+    return () => clearInterval(timer);
   }, []);
 
-  const slide = slides[index];
+  const current = heroSlides[index];
 
   return (
-    <section className="w-full flex justify-center py-6 bg-white">
-      {/* Container restricted to 90% or max-width for better look on big screens */}
-      <div className="w-full max-w-7xl px-6">
-        {/* The Card - using slide.bg dynamically */}
-        <div
-          className={`relative min-h-120 ${slide.bg} rounded-4xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between transition-colors duration-1000 ease-in-out overflow-hidden`}>
-          {/* LEFT TEXT CONTENT */}
-          <div
-            key={index} // Key forces re-render for animation
-            className="z-10 max-w-lg space-y-4 animate-in fade-in slide-in-from-left-5 duration-700">
-            <p className="text-lg font-extrabold text-gray-700 uppercase tracking-wide">
-              {slide.subtitle}
+    <section className="relative px-4 md:px-6 pt-6 md:pt-10">
+      <div className="mx-auto max-w-7xl rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-lg">
+        <div className="grid lg:grid-cols-2 min-h-[22rem] md:min-h-[26rem] lg:min-h-[28rem] xl:min-h-[30rem]">
+          <div className="relative p-8 md:p-12 lg:p-14 flex flex-col justify-center bg-[linear-gradient(140deg,#0f766e_0%,#0f172a_70%)] text-white">
+            <span className="inline-flex w-fit rounded-full bg-white/15 px-4 py-1 text-sm font-semibold tracking-wide backdrop-blur-sm fade-up">
+              {current.badge}
+            </span>
+            <h1
+              key={current.title}
+              className="mt-5 text-4xl md:text-5xl lg:text-6xl font-black leading-tight fade-up">
+              {current.title}
+            </h1>
+            <p
+              key={current.text}
+              className="mt-4 text-base md:text-lg text-slate-100 max-w-xl fade-up"
+              style={{ animationDelay: "120ms" }}>
+              {current.text}
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-black text-blue-900 leading-tight">
-              {slide.title}
-            </h1>
-
-            <p className="text-2xl text-gray-800 font-medium">{slide.desc}</p>
-
-            <button className="mt-4 bg-emerald-900 text-white px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-lg">
-              Shop Now →
-            </button>
-          </div>
-
-          {/* RIGHT IMAGE */}
-          <div className="relative mt-8 md:mt-0 flex justify-center items-end">
-            <img 
-              key={slide.image}
-              src={slide.image}
-              alt="Pet Promotion"
-              className="w-50 object-contain animate-in fade-in zoom-in-95 duration-700"
-            />
-          </div>
-
-          {/* DOTS NAVIGATION */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-            {slides.map((_, i) => (
+            <div
+              className="mt-8 flex flex-wrap gap-3 fade-up"
+              style={{ animationDelay: "200ms" }}>
               <button
-                key={i}
-                onClick={() => setIndex(i)}
-                className={`transition-all duration-300 rounded-full cursor-pointer h-2 ${
-                  i === index
-                    ? "w-8 bg-gray-800" // Active: elongated pill
-                    : "w-2 bg-gray-400 hover:bg-gray-600" // Inactive: small dot
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
+                onClick={onShopNow}
+                className="rounded-xl bg-emerald-300 px-5 py-3 font-bold text-slate-900 hover:bg-emerald-200 transition">
+                Shop Now
+              </button>
+              <button
+                onClick={onExploreCategories}
+                className="rounded-xl border border-white/40 px-5 py-3 font-semibold hover:bg-white/10 transition">
+                Explore Categories
+              </button>
+            </div>
+
+            <div className="mt-10 flex items-center gap-2">
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIndex(i)}
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    i === index ? "w-9 bg-white" : "w-2.5 bg-white/45"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden bg-slate-100">
+            <img
+              key={current.image}
+              src={current.image}
+              alt="Pet hero"
+              className="h-full w-full object-cover hero-image"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-slate-900/20 to-transparent" />
           </div>
         </div>
       </div>
@@ -173,109 +132,172 @@ function HeroSlider() {
 }
 
 const Home = () => {
-    const [dogSupplies, setDogSupplies] = useState([]);
+  const navigate = useNavigate();
+  const [supplies, setSupplies] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleShopNow = () => {
+    navigate("/shop");
+  };
+
+  const handleExploreCategories = () => {
+    const categoriesSection = document.getElementById("home-categories");
+    if (categoriesSection) {
+      categoriesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handleBuy = (item) => {
+    navigate(`/checkout?itemId=${item.id}`, { state: { item } });
+  };
+
   useEffect(() => {
-    const fetchDogSupplies = async () => {
-      const data = await getPetSupplies() || [];
-      const dogs = data.filter(item => item.category === "Dog").slice(0, 5);
-      setDogSupplies(dogs);
+    const loadSupplies = async () => {
+      const data = (await getPetSupplies()) || [];
+      setSupplies(data);
       setLoading(false);
     };
-    fetchDogSupplies();
+
+    loadSupplies();
   }, []);
 
-  if (loading) {
-    return <p className="text-center mt-10 text-gray-500">Loading...</p>;
-  }
-  return (
-    <div className="w-full min-h-screen bg-gray-100 flex flex-col">
+  const featured = useMemo(() => supplies.slice(0, 8), [supplies]);
 
-      {/* Hero Section */}
-      <HeroSlider />
-      {/* Featured Section */}
-      <section className="top-category bg-gray- p-6">
-        <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">
-            Top Categories
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
-            {categories.map((category, index) => (
-              <div
-                key={index}
-                className={`${category.bgColor} rounded-lg p-4 flex flex-col items-center justify-center h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-105`}>
-                <div className="text-gray-700 mb-2">{category.icon}</div>
-                <p className="text-sm font-medium text-gray-800 text-center">
-                  {category.name}
+  return (
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] text-slate-800">
+      <Hero
+        onShopNow={handleShopNow}
+        onExploreCategories={handleExploreCategories}
+      />
+
+      <section id="home-categories" className="px-4 md:px-6 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-7">
+            <div className="py-8">
+              <p className="text-sm uppercase tracking-[0.16em] text-teal-700 font-semibold">
+                Categories
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black ">
+                Shop By Pet Type
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
+            {categoryCards.map((item, idx) => (
+              <article
+                key={item.name}
+                className={`rounded-2xl border border-white/70 bg-linear-to-br ${item.tone} p-5 shadow-sm card-enter`}
+                style={{ animationDelay: `${idx * 90}ms` }}>
+                <div className="h-11 w-11 rounded-xl bg-white/80 border border-white/80 grid place-items-center text-lg font-black text-slate-700">
+                  {item.name.charAt(0)}
+                </div>
+                <h3 className="mt-4 text-lg font-bold">{item.name}</h3>
+                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                  {item.desc}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
-             <section className="detial-supplies">
-          <div className="w-full bg-gray-100 p-6">
-            <h1 className="text-3xl text-center my-8 pb-8 font-bold text-gray-800">
-              Dog Supplies
-            </h1>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {dogSupplies.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden relative 
-                       transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-                  {/* Image */}
-                  <div className="relative h-48 w-full overflow-hidden rounded-t-2xl">
+      <section className="px-4 md:px-6 pb-14 md:pb-20">
+        <div className="max-w-7xl mx-auto rounded-3xl bg-white border border-slate-200 shadow-sm p-6 md:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div>
+              <p className="text-sm uppercase tracking-[0.16em] text-indigo-600 font-semibold">
+                Featured
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black">
+                Best Sellers Right Now
+              </h2>
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="text-center py-12 text-slate-500">
+              Loading products...
+            </p>
+          ) : (
+            <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6">
+              {featured.map((item, idx) => (
+                <article
+                  key={item.id || idx}
+                  className="group rounded-2xl border border-slate-200 overflow-hidden hover:-translate-y-1 transition duration-300 bg-white card-enter"
+                  style={{ animationDelay: `${idx * 70}ms` }}>
+                  <div className="relative h-52 overflow-hidden bg-slate-100">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-110"
+                      className="h-full w-full object-cover group-hover:scale-105 transition duration-500"
                     />
-
-                    {/* Favorite Heart */}
-                    <button className="absolute top-3 right-3 text-red-500 bg-white rounded-full p-2 shadow hover:scale-125 transition-transform duration-300">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-                           2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                           C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                           c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        />
-                      </svg>
-                    </button>
+                    <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
+                      {item.category}
+                    </span>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-4 flex flex-col justify-between h-56">
-                    <div>
-                      <h2 className="text-lg font-semibold text-gray-800">
-                        {item.title}
-                      </h2>
-                      <p className="text-gray-600 mt-2 text-sm">
-                        {item.content}
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg line-clamp-1">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 mt-2 h-10 overflow-hidden">
+                      {item.content}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between">
+                      <p className="text-xl font-black text-teal-700">
+                        ${Number(item.price).toFixed(2)}
                       </p>
-                      <p className="text-xl font-bold text-indigo-600 mt-2">
-                        ${item.price}
-                      </p>
+                      <button
+                        onClick={() => handleBuy(item)}
+                        className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 transition">
+                        Buy
+                      </button>
                     </div>
-
-                    {/* Buy Button */}
-                    <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors font-semibold">
-                      Buy
-                    </button>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
-          </div>
-        </section>
+          )}
+        </div>
+      </section>
 
+
+      <style>{`
+        .fade-up {
+          animation: fadeUp 0.7s ease both;
+        }
+
+        .hero-image {
+          animation: revealZoom 0.8s ease both;
+        }
+
+        .card-enter {
+          animation: fadeUp 0.65s ease both;
+        }
+
+        @keyframes fadeUp {
+          from {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes revealZoom {
+          from {
+            opacity: 0;
+            transform: scale(1.06);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 };

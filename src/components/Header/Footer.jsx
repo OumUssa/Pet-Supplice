@@ -1,103 +1,97 @@
+import { Link } from "react-router-dom";
 import {
-  FaPaw,
-  FaHeart,
-  FaTruck,
-  FaShieldAlt,
-  FaHeadset,
   FaAward,
+  FaHeadset,
+  FaHeart,
+  FaPaw,
+  FaShieldAlt,
+  FaTruck,
 } from "react-icons/fa";
 
-const Footer=()=>{
-    return (
-        <>   
-        <footer className="bg-gray-800 text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-4 gap-8">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <FaPaw className="text-green-400 text-2xl" />
-                  <span className="text-2xl font-bold">PETZONE</span>
-                </div>
-                <p className="text-gray-400">
-                  Your one-stop shop for all your pet needs. Quality products
-                  for happy pets.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Home
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Shop
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Services
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      About Us
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Contact
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Pet Categories</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Dog Supplies
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Cat Supplies
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Bird Supplies
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Fish Supplies
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Small Pet Supplies
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li>123 Pet Street, Animal City</li>
-                  <li>contact@petzone.com</li>
-                  <li>1-800-PETZONE</li>
-                </ul>
-              </div>
+const Footer = () => {
+  return (
+    <footer className="mt-auto text-white bg-[linear-gradient(140deg,#0f766e_0%,#0f172a_70%)]">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
+        <div className="grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <FaPaw className="text-teal-100 text-2xl" />
+              <span className="text-2xl font-black tracking-wide">PETZONE</span>
             </div>
-            <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2026 PETZONE. All rights reserved.</p>
-            </div>
+            <p className="text-teal-50/90 leading-relaxed">
+              One pet website for shopping, support, and trusted care guidance.
+            </p>
           </div>
-        </footer>
-        </>
-    )
-}
+
+          <div>
+            <h3 className="text-lg font-bold mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-teal-50/90">
+              <li>
+                <Link to="/" className="hover:text-white transition">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop" className="hover:text-white transition">
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-white transition">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-white transition">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-white transition">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold mb-4">Why PETZONE</h3>
+            <ul className="space-y-3 text-teal-50/90">
+              <li className="flex items-center gap-2">
+                <FaTruck /> Fast support and delivery help
+              </li>
+              <li className="flex items-center gap-2">
+                <FaHeadset /> Friendly customer guidance
+              </li>
+              <li className="flex items-center gap-2">
+                <FaShieldAlt /> Trusted product quality
+              </li>
+              <li className="flex items-center gap-2">
+                <FaAward /> Curated by pet-care focus
+              </li>
+              <li className="flex items-center gap-2">
+                <FaHeart /> Built with pet-first values
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold mb-4">Contact</h3>
+            <ul className="space-y-2 text-teal-50/90">
+              <li>Phnom Penh, Cambodia</li>
+              <li>support@petzone.com</li>
+              <li>+855 12 345 678</li>
+              <li>Mon-Sat: 8:00 AM - 8:00 PM</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-teal-100/30 mt-8 pt-6 text-center text-teal-50/80">
+          <p>© 2026 PETZONE. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 export default Footer;

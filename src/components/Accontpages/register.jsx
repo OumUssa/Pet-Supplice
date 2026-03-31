@@ -3,6 +3,7 @@ import { userStore } from "../../store/RegisterStore";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -29,9 +30,6 @@ export default function Signup() {
     }
   };
 
-  let Register=({
-    
-  }) 
   // Validate before submit
   const validate = () => {
     let isValid = true;
@@ -85,73 +83,122 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-white min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-xl p-8 w-full text-black max-w-md space-y-4 ">
-        <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
+    <div className="site-shell min-h-screen px-4 py-6 md:py-10 flex items-center">
+      <main className="max-w-5xl mx-auto w-full">
+        <section className="grid lg:grid-cols-[0.92fr_1.08fr] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,118,110,0.13)]">
+          <div className="relative p-8 md:p-10 bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900 flex flex-col text-white">
+            <div className="mb-30 relative">
+              <img
+                src="/image/logo.png"
+                alt="PETZONE Logo"
+                className="h-45 object-contain absolute -top-10 -left-15"
+              />
+            </div>
+            <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
+              Register
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black leading-tight text-white drop-shadow-sm">
+              Create Your PETZONE Profile
+            </h1>
+            <p className="mt-3 text-slate-100/90 leading-relaxed max-w-sm">
+              Start with one account for simpler shopping and better continuity.
+            </p>
 
-        {/* Username */}
-        <div>
-          <label className="block mb-1 font-medium">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
-            placeholder="Enter username"
-          />
-          {error.username && (
-            <div className="text-red-500 text-sm mt-1">{error.username}</div>
-          )}
-        </div>
+            <div className="mt-10 space-y-3 max-w-sm">
+              <div className="rounded-2xl border border-white/30 bg-white/10 px-4 py-3 shadow-sm hover:shadow-md transition backdrop-blur">
+                <p className="text-sm font-semibold text-white">
+                  One profile for all pet needs
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/30 bg-white/10 px-4 py-3 shadow-sm hover:shadow-md transition backdrop-blur">
+                <p className="text-sm font-semibold text-white">
+                  Keep your account details ready
+                </p>
+              </div>
+            </div>
+          </div>
 
-        {/* Email */}
-        <div>
-          <label className="block mb-1 font-medium">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
-            placeholder="you@example.com"
-          />
-          {error.email && (
-            <div className="text-red-500 text-sm mt-1">{error.email}</div>
-          )}
-        </div>
+          <div className="p-8 md:p-10 bg-white text-black flex flex-col">
+            <h2 className="text-3xl mb-8 font-black text-slate-800">
+              Create Account
+            </h2>
 
-        {/* Password */}
-        <div>
-          <label className="block mb-1 font-medium">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
-            placeholder="******"
-          />
-          {error.password && (
-            <div className="text-red-500 text-sm mt-1">{error.password}</div>
-          )}
-        </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block mb-1 font-semibold text-slate-700">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={form.username}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Enter username"
+                />
+                {error.username && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {error.username}
+                  </div>
+                )}
+              </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-          Create Account
-        </button>
+              <div>
+                <label className="block mb-1 font-semibold text-slate-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="you@example.com"
+                />
+                {error.email && (
+                  <div className="text-red-500 text-sm mt-1">{error.email}</div>
+                )}
+              </div>
 
-        {/* Success */}
-        {success && (
-          <div className="text-green-600 text-center mt-2">{success}</div>
-          
-        )}
-      </form>
+              <div>
+                <label className="block mb-1 font-semibold text-slate-700">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="******"
+                />
+                {error.password && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {error.password}
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full btn-primary py-3 rounded-xl transition font-semibold">
+                Create Account
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/signin")}
+                className="w-full btn-outline-primary py-3 rounded-xl transition font-semibold">
+                Back To Sign In
+              </button>
+
+              {success && (
+                <div className="text-green-600 text-center mt-2">{success}</div>
+              )}
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

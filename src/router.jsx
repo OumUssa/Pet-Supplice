@@ -8,8 +8,11 @@ import ViewdetailDash from "./components/Dashboard/ViewDetailDash";
 import TableView from "./components/Dashboard/TableView";
 import InsertStore from "./components/Dashboard/InsertStore";
 import UpdateStore from "./components/Dashboard/UpdateStore";
-import AboutUs from "./components/Dashboard/AboutUs"
-import  Contact  from "./components/Dashboard/contact";
+import AboutUs from "./components/Dashboard/AboutUs";
+import Contact from "./components/Dashboard/contact";
+import Shop from "./pages/Shop";
+import Services from "./pages/Services";
+import Checkout from "./pages/Checkout";
 
 export const router = createBrowserRouter([
   {
@@ -22,19 +25,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/signin",
-    element: (
-      <AuthGuard>
-        <Signin />
-      </AuthGuard>
-    ),
+    element: <Signin />,
   },
   {
     path: "/register",
-    element: (
-      <AuthGuard>
-        <Register />
-      </AuthGuard>
-    ),
+    element: <Register />,
   },
   {
     path: "/about",
@@ -49,6 +44,30 @@ export const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <Contact />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/shop",
+    element: (
+      <AuthGuard>
+        <Shop />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/services",
+    element: (
+      <AuthGuard>
+        <Services />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/checkout",
+    element: (
+      <AuthGuard>
+        <Checkout />
       </AuthGuard>
     ),
   },
@@ -78,5 +97,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
 ]);

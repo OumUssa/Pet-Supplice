@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
 
 const AuthGuard = ({ children }) => {
-  const token = useState(localStorage.getItem("tokenPet"));
-   
-  if(!token || !<Navigate to="/signin"/>){
-    <Navigate to="/signin" />
+  const token = localStorage.getItem("tokenPet");
+
+  if (!token) {
+    return <Navigate to="/signin" replace />;
   }
 
-  // logged in → show the page
   return children;
 };
 

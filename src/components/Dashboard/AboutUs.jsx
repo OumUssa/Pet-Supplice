@@ -1,252 +1,202 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
-  FaPaw,
-  FaHeart,
-  FaTruck,
-  FaShieldAlt,
-  FaHeadset,
-  FaAward,
-} from "react-icons/fa";
+  BarChart3,
+  Boxes,
+  CheckCircle2,
+  Heart,
+  LayoutDashboard,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import Header from "../Header/Header";
 import Footer from "../Header/Footer";
-// import { BiDog, BiCat } from 'react-icons/bi';
-// import { BsBird, BsFish } from 'react-icons/bs';
-// import { GiRabbit } from 'react-icons/gi';
+
+const highlights = [
+  {
+    title: "One Place For Pet Shopping",
+    desc: "Dogs, Cats, Birds, Fish, and Small Pets are organized in one clean storefront.",
+    icon: Boxes,
+  },
+  {
+    title: "Simple Dashboard Flow",
+    desc: "Insert, update, and manage product records from a practical admin interface.",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Fast Front-End Experience",
+    desc: "The website remains smooth and usable with local data persistence.",
+    icon: BarChart3,
+  },
+  {
+    title: "Customer-Centered Support",
+    desc: "Contact and Services pages provide clear help paths for pet owners.",
+    icon: Users,
+  },
+];
+
+const values = [
+  "Pet-first product organization",
+  "Clean UI with responsive layouts",
+  "Consistent navigation across pages",
+  "Reliable and simple user flow",
+];
 
 const AboutPage = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50">
-        {/* Header - Similar to your homepage */}
 
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-green-400 to-green-600 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <div className="site-shell text-slate-800">
+        <section className="relative overflow-hidden bg-gradient-to-r from-teal-700 via-cyan-700 to-sky-700 text-white py-16 md:py-20">
+          <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+
+          <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+            <p className="uppercase tracking-[0.18em] text-cyan-100 text-sm mb-3 fade-up">
               About PETZONE
+            </p>
+            <h1 className="text-4xl md:text-6xl font-black max-w-3xl leading-tight fade-up">
+              One Website Experience For Every Pet Need
             </h1>
-            <p className="text-xl max-w-3xl mx-auto">
-              Your trusted partner in providing the best products for your
-              beloved pets since 2010
+            <p
+              className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up"
+              style={{ animationDelay: "120ms" }}>
+              PETZONE combines shopping, services, support, and admin product
+              management in a single consistent platform.
             </p>
           </div>
         </section>
 
-        {/* Our Story Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-6">
-                  Our Story
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  PETZONE began with a simple mission: to provide pet owners
-                  with high-quality, affordable products for their furry,
-                  feathered, and finned friends. What started as a small
-                  family-run store has grown into a comprehensive online
-                  platform serving pet lovers nationwide.
-                </p>
-                <p className="text-gray-600 mb-4">
-                  We understand that pets are more than just animals – they're
-                  family members. That's why we're committed to offering only
-                  the best products, from nutritious food to comfortable beds,
-                  engaging toys to essential healthcare items.
-                </p>
-                <p className="text-gray-600">
-                  Our team consists of passionate pet owners and experts who
-                  carefully select every product in our inventory. When you shop
-                  at PETZONE, you can trust that you're getting items that are
-                  safe, durable, and loved by pets everywhere.
-                </p>
-              </div>
-              <div className="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
-                <img
-                  src="https://picsum.photos/seed/petzone-team/600/400.jpg"
-                  alt="PETZONE Team"
-                  className="rounded-lg w-full h-full object-cover"
-                />
-              </div>
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14">
+          <section className="grid lg:grid-cols-5 gap-6 md:gap-8">
+            <div className="lg:col-span-3 brand-card p-6 md:p-8 fade-up">
+              <h2 className="text-2xl md:text-3xl font-black mb-4">
+                Our Story
+              </h2>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                PETZONE was built to make pet shopping easy for users and
+                product management simple for admins. Instead of scattered
+                experiences, we designed one website with connected pages and
+                clear navigation.
+              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                From category browsing in Shop, to guidance in Services, to
+                direct communication in Contact, every page follows one brand
+                language.
+              </p>
+              <p className="text-slate-600 leading-relaxed">
+                Our goal is straightforward: help pet owners find better
+                products faster while keeping the platform clean, reliable, and
+                easy to use.
+              </p>
             </div>
-          </div>
-        </section>
 
-        {/* Pet Categories Section */}
-        <section className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
-              Categories We Serve
-            </h2>
-            <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                {/* <BiDog className="text-5xl text-blue-500 mx-auto mb-4" /> */}
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Dogs
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Premium food, toys, accessories, and healthcare for your
-                  canine companions
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                {/* <BiCat className="text-5xl text-orange-500 mx-auto mb-4" /> */}
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Cats
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Everything your feline friend needs, from nutrition to
-                  entertainment
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                {/* <BsBird className="text-5xl text-yellow-500 mx-auto mb-4" /> */}
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Birds
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Cages, food, toys, and health products for birds of all sizes
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                {/* <BsFish className="text-5xl text-cyan-500 mx-auto mb-4" /> */}
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Fish
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Aquariums, filters, food, and decorations for your aquatic
-                  pets
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                {/* <GiRabbit className="text-5xl text-purple-500 mx-auto mb-4" /> */}
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Small Pets
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Specialized products for rabbits, hamsters, guinea pigs, and
-                  more
+            <div
+              className="lg:col-span-2 brand-card p-6 md:p-8 fade-up"
+              style={{ animationDelay: "90ms" }}>
+              <h3 className="text-xl font-black mb-4">Core Values</h3>
+              <ul className="space-y-3">
+                {values.map((value) => (
+                  <li
+                    key={value}
+                    className="flex items-start gap-2 text-slate-700">
+                    <CheckCircle2 className="w-5 h-5 text-cyan-700 mt-0.5" />
+                    <span>{value}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 rounded-2xl bg-cyan-50 border border-cyan-100 p-4">
+                <div className="flex items-center gap-2 text-cyan-800 font-semibold mb-1">
+                  <ShieldCheck className="w-4 h-4" />
+                  Reliable Platform
+                </div>
+                <p className="text-slate-600 text-sm">
+                  Built with a practical architecture for smooth current usage
+                  and future growth.
                 </p>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Our Values Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
-              Our Values
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <FaHeart className="text-4xl text-red-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Passion for Pets
+          <section className="mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            {highlights.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <article
+                  key={item.title}
+                  className="brand-card p-6 transition duration-300 fade-up"
+                  style={{ animationDelay: `${idx * 80}ms` }}>
+                  <div className="brand-icon mb-4">
+                    <Icon className="w-5 h-5 text-cyan-700" />
+                  </div>
+                  <h3 className="text-lg font-black mb-2">{item.title}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
+                </article>
+              );
+            })}
+          </section>
+
+          <section
+            className="mt-10 brand-card p-6 md:p-8 fade-up"
+            style={{ animationDelay: "200ms" }}>
+            <div className="flex flex-wrap items-start justify-between gap-5">
+              <div className="max-w-2xl">
+                <h3 className="text-2xl md:text-3xl font-black mb-2">
+                  Built Around Pet Owners
                 </h3>
-                <p className="text-gray-600">
-                  We're pet lovers first, and business people second. Every
-                  decision we make is guided by what's best for pets.
+                <p className="text-slate-600">
+                  PETZONE keeps information clear and actions simple, so users
+                  can focus on choosing what is best for their pets.
                 </p>
               </div>
-              <div className="text-center">
-                <FaAward className="text-4xl text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Quality Assurance
-                </h3>
-                <p className="text-gray-600">
-                  We carefully vet all products to ensure they meet our high
-                  standards for safety, durability, and pet satisfaction.
-                </p>
-              </div>
-              <div className="text-center">
-                <FaShieldAlt className="text-4xl text-blue-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Trust & Transparency
-                </h3>
-                <p className="text-gray-600">
-                  We believe in honest business practices and providing clear
-                  information about all our products.
-                </p>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/shop"
+                  className="inline-flex px-5 py-2.5 rounded-xl btn-primary font-semibold transition">
+                  Explore Shop
+                </Link>
+                <Link
+                  to="/services"
+                  className="inline-flex px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition">
+                  View Services
+                </Link>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Our Services Section */}
-        <section className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
-              What We Offer
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                <FaTruck className="text-4xl text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Fast Delivery
-                </h3>
-                <p className="text-gray-600">
-                  Free shipping on orders over $49 with quick delivery to your
-                  doorstep
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                <FaHeadset className="text-4xl text-blue-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Expert Support
-                </h3>
-                <p className="text-gray-600">
-                  Our knowledgeable team is ready to help with any pet-related
-                  questions
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                <FaAward className="text-4xl text-yellow-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Quality Guarantee
-                </h3>
-                <p className="text-gray-600">
-                  100% satisfaction guarantee on all products with easy returns
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition">
-                <FaPaw className="text-4xl text-purple-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Loyalty Program
-                </h3>
-                <p className="text-gray-600">
-                  Earn rewards with every purchase and enjoy exclusive member
-                  benefits
-                </p>
-              </div>
+            <div className="mt-6 flex items-center gap-2 text-cyan-800">
+              <Sparkles className="w-4 h-4" />
+              <Heart className="w-4 h-4" />
+              <p className="text-sm font-semibold">
+                Consistent design, consistent experience.
+              </p>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
 
-        {/* Call to Action */}
-        <section className="bg-gradient-to-r from-green-400 to-green-600 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">Join the PETZONE Family</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Sign up for our newsletter to receive exclusive offers, new
-              product updates, and pet care tips.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="px-4 py-3 rounded-lg text-gray-800 w-full sm:w-80"
-              />
-              <button className="bg-white text-green-600 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition w-full sm:w-auto">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </section>
+        <style>{`
+          .fade-up {
+            animation: fadeUp 0.7s ease both;
+          }
 
-        {/* <Footer/> */}
-        <Footer/>
+          @keyframes fadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(14px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </div>
+
+      <Footer />
     </>
   );
 };
