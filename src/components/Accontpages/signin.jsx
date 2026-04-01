@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { userStore } from "../../store/RegisterStore";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../Base/BaseToast";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState({ email: "", password: "" });
 
@@ -78,7 +80,7 @@ export default function LoginForm() {
       if (user) {
         setForgotError("");
         setShowForgotModal(false);
-        alert(
+        showSuccess(
           "Email verified. Please create a new account password in register page.",
         );
       } else {
@@ -87,6 +89,7 @@ export default function LoginForm() {
     } catch (err) {
       console.error(err);
       setForgotError("Error verifying email");
+      showError("Error verifying email");
     }
   };
 

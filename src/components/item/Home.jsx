@@ -122,6 +122,9 @@ const faqItems = [
   },
 ];
 
+const getDelayClass = (delay) =>
+  delay > 0 ? `anim-delay-${String(delay)}` : "";
+
 function Hero({ onShopNow, onExploreCategories }) {
   const [index, setIndex] = useState(0);
 
@@ -150,14 +153,11 @@ function Hero({ onShopNow, onExploreCategories }) {
             </h1>
             <p
               key={current.text}
-              className="mt-4 text-base md:text-lg text-slate-100 max-w-xl fade-up"
-              style={{ animationDelay: "120ms" }}>
+              className="mt-4 text-base md:text-lg text-slate-100 max-w-xl fade-up anim-delay-120">
               {current.text}
             </p>
 
-            <div
-              className="mt-15 mb-5 flex flex-wrap gap-3 fade-up"
-              style={{ animationDelay: "200ms" }}>
+            <div className="mt-15 mb-5 flex flex-wrap gap-3 fade-up anim-delay-200">
               <button
                 onClick={onShopNow}
                 className="rounded-xl bg-emerald-300 px-5 py-2 font-bold text-slate-900 hover:bg-emerald-200 transition">
@@ -260,8 +260,7 @@ const Home = () => {
               <button
                 key={item.name}
                 onClick={() => handleOpenCategory(item.name)}
-                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[340px] text-left border border-slate-200/90 bg-white p-5 card-enter pet-type-card"
-                style={{ animationDelay: `${idx * 90}ms` }}>
+                className={`w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[340px] text-left border border-slate-200/90 bg-white p-5 card-enter pet-type-card ${getDelayClass(idx * 90)}`}>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2.5">
                     <span className="pet-type-card__icon-wrap">
@@ -320,8 +319,7 @@ const Home = () => {
               {featured.map((item, idx) => (
                 <article
                   key={item.id || idx}
-                  className="group rounded-2xl border border-slate-200 overflow-hidden bg-white card-enter product-card"
-                  style={{ animationDelay: `${idx * 70}ms` }}>
+                  className={`group rounded-2xl border border-slate-200 overflow-hidden bg-white card-enter product-card ${getDelayClass(idx * 70)}`}>
                   <div className="relative h-44 overflow-hidden product-card__media">
                     <img
                       src={item.image}
@@ -382,8 +380,7 @@ const Home = () => {
             {faqItems.map((faq, idx) => (
               <details
                 key={faq.question}
-                className="faq-item fade-up"
-                style={{ animationDelay: `${idx * 50}ms` }}>
+                className={`faq-item fade-up ${getDelayClass(idx * 50)}`}>
                 <summary className="faq-question">
                   <span>{faq.question}</span>
                   <i className="bi bi-plus-lg faq-icon"></i>
@@ -394,210 +391,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      <style>{`
-        .fade-up {
-          animation: fadeUp 0.7s ease both;
-        }
-
-        .hero-image {
-          animation: revealZoom 0.8s ease both;
-        }
-
-        .card-enter {
-          animation: cardRise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-        }
-
-        .pet-type-card {
-          border-radius: 14px;
-          box-shadow: 0 6px 14px -14px rgba(15, 23, 42, 0.45);
-          transition: border-color 0.22s ease, box-shadow 0.22s ease,
-            transform 0.22s ease;
-        }
-
-        .pet-type-card__icon-wrap {
-          width: 30px;
-          height: 30px;
-          border-radius: 999px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-        }
-
-        .pet-type-card__icon {
-          transition: transform 0.2s ease;
-        }
-
-        .pet-type-count {
-          min-width: 24px;
-          height: 24px;
-          border-radius: 999px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 10px;
-          font-weight: 700;
-          color: #475569;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-        }
-
-        .pet-type-chip {
-          font-size: 11px;
-          padding: 3px 8px;
-          border-radius: 999px;
-          border: 1px solid #d1d5db;
-          color: #475569;
-          background: #f8fafc;
-        }
-
-        .pet-type-card:hover {
-          transform: translateY(-4px);
-          border-color: #94a3b8;
-          box-shadow: 0 16px 24px -18px rgba(15, 23, 42, 0.45);
-        }
-
-        .pet-type-card:hover .pet-type-card__icon {
-          transform: translateX(2px);
-        }
-
-        .pet-type-card:hover .pet-type-chip {
-          border-color: #94a3b8;
-          background: #ffffff;
-        }
-
-        .pet-type-card:focus-visible {
-          outline: 2px solid #14b8a6;
-          outline-offset: 2px;
-        }
-
-        .pet-type-card__arrow {
-          transition: transform 0.2s ease, color 0.2s ease;
-        }
-
-        .pet-type-card:hover .pet-type-card__arrow {
-          transform: translateX(2px);
-          color: #0f766e;
-        }
-
-        .product-card {
-          animation: cardRise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-          box-shadow: 0 8px 18px -14px rgba(15, 23, 42, 0.5);
-        }
-
-        .product-card__media {
-          background: linear-gradient(160deg, #c7b6f4 0%, #a78bfa 100%);
-        }
-
-        .product-card__fav {
-          border: 1px solid rgba(148, 163, 184, 0.35);
-          transition: transform 0.2s ease, background-color 0.2s ease,
-            color 0.2s ease;
-        }
-
-        .product-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 20px -16px rgba(15, 23, 42, 0.35);
-        }
-
-        .product-card:hover .product-card__fav {
-          transform: scale(1.08);
-          background-color: #ffffff;
-          color: #7c3aed;
-        }
-
-        .faq-item {
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          background: #ffffff;
-          overflow: hidden;
-        }
-
-        .faq-question {
-          list-style: none;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          cursor: pointer;
-          padding: 14px 16px;
-          font-weight: 700;
-          color: #0f172a;
-        }
-
-        .faq-question::-webkit-details-marker {
-          display: none;
-        }
-
-        .faq-answer {
-          padding: 0 16px 14px;
-          color: #475569;
-          line-height: 1.6;
-          font-size: 0.92rem;
-        }
-
-        .faq-icon {
-          transition: transform 0.2s ease;
-          color: #0f766e;
-          font-size: 14px;
-          flex-shrink: 0;
-        }
-
-        .faq-item[open] .faq-icon {
-          transform: rotate(45deg);
-        }
-
-        @keyframes fadeUp {
-          from {
-            opacity: 0;
-            transform: translateY(14px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes revealZoom {
-          from {
-            opacity: 0;
-            transform: scale(1.06);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        @keyframes cardRise {
-          from {
-            opacity: 0;
-            transform: translateY(18px) scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .fade-up,
-          .hero-image,
-          .card-enter,
-          .product-card {
-            animation: none !important;
-          }
-
-          .pet-type-card,
-          .pet-type-chip,
-          .product-card {
-            transition: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

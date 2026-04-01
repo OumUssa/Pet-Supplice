@@ -12,6 +12,9 @@ import {
 import Header from "../Header/Header";
 import Footer from "../Header/Footer";
 
+const getDelayClass = (delay) =>
+  delay > 0 ? `anim-delay-${String(delay)}` : "";
+
 const Contact = () => {
   return (
     <>
@@ -29,9 +32,7 @@ const Contact = () => {
             <h1 className="text-2xl md:text-4xl font-black max-w-3xl leading-tight fade-up">
               Let&apos;s Talk About Your Pet Care Needs
             </h1>
-            <p
-              className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up"
-              style={{ animationDelay: "120ms" }}>
+            <p className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up anim-delay-120">
               Ask about products, orders, or support. Our team is ready to help
               you quickly.
             </p>
@@ -52,9 +53,7 @@ const Contact = () => {
                 </p>
               </div>
 
-              <div
-                className="brand-card contact-flat p-5 fade-up"
-                style={{ animationDelay: "90ms" }}>
+              <div className="brand-card contact-flat p-5 fade-up anim-delay-90">
                 <div className="flex items-center gap-3 mb-2">
                   <Mail className="w-5 h-5 text-cyan-700" />
                   <h3 className="font-bold text-lg">Email</h3>
@@ -65,9 +64,7 @@ const Contact = () => {
                 </p>
               </div>
 
-              <div
-                className="brand-card contact-flat p-5 fade-up"
-                style={{ animationDelay: "180ms" }}>
+              <div className="brand-card contact-flat p-5 fade-up anim-delay-180">
                 <div className="flex items-center gap-3 mb-2">
                   <MapPin className="w-5 h-5 text-cyan-700" />
                   <h3 className="font-bold text-lg">Address</h3>
@@ -78,9 +75,7 @@ const Contact = () => {
                 </p>
               </div>
 
-              <div
-                className="brand-card contact-flat contact-hours-card text-white p-5 fade-up"
-                style={{ animationDelay: "270ms" }}>
+              <div className="brand-card contact-flat contact-hours-card text-white p-5 fade-up anim-delay-270">
                 <div className="flex items-center gap-3 mb-2">
                   <Clock3 className="w-5 h-5 text-emerald-300" />
                   <h3 className="font-bold text-lg">Working Hours</h3>
@@ -90,9 +85,7 @@ const Contact = () => {
               </div>
             </aside>
 
-            <section
-              className="lg:col-span-3 brand-card contact-flat p-6 md:p-8 fade-up"
-              style={{ animationDelay: "120ms" }}>
+            <section className="lg:col-span-3 brand-card contact-flat p-6 md:p-8 fade-up anim-delay-120">
               <h2 className="text-2xl md:text-3xl font-black text-slate-800 mb-2">
                 Send Us A Message
               </h2>
@@ -176,9 +169,7 @@ const Contact = () => {
             </section>
           </div>
 
-          <section
-            className="mt-10 brand-card contact-flat p-6 md:p-8 fade-up"
-            style={{ animationDelay: "220ms" }}>
+          <section className="mt-10 brand-card contact-flat p-6 md:p-8 fade-up anim-delay-220">
             <div className="flex items-start gap-3 text-slate-700">
               <ShieldCheck className="w-5 h-5 mt-1 text-emerald-600" />
               <div>
@@ -191,35 +182,6 @@ const Contact = () => {
             </div>
           </section>
         </main>
-
-        <style>{`
-          .contact-flat,
-          .contact-flat:hover {
-            border: 0 !important;
-            box-shadow: none !important;
-            transform: none !important;
-          }
-
-          .contact-hours-card {
-            background: #0f172a !important;
-            color: #ffffff !important;
-          }
-
-          .fade-up {
-            animation: fadeUp 0.7s ease both;
-          }
-
-          @keyframes fadeUp {
-            from {
-              opacity: 0;
-              transform: translateY(14px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
       </div>
 
       <Footer />

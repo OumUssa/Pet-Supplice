@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import "../Header/Header.css";
 const Header = () => {
   const pettoken = localStorage.getItem("tokenPet");
   const navigate = useNavigate();
@@ -103,9 +102,7 @@ const Header = () => {
                 <i className="bi bi-heart-fill text-2xl mx-5"></i>
               </a>
               <a href="#">
-                <i
-                  style={{ fontSize: "27px" }}
-                  className="bi bi-cart-fill "></i>
+                <i className="bi bi-cart-fill header-cart-icon"></i>
               </a>
             </div>
           </div>

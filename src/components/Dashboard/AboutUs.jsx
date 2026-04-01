@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Lottie from "lottie-react";
 import {
   BarChart3,
   Boxes,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import Header from "../Header/Header";
 import Footer from "../Header/Footer";
+import DeveloperAnimation from "../../assets/animation/Developer.json";
 
 const highlights = [
   {
@@ -64,6 +66,9 @@ const roadmap = [
   },
 ];
 
+const getDelayClass = (delay) =>
+  delay > 0 ? `anim-delay-${String(delay)}` : "";
+
 const AboutPage = () => {
   return (
     <>
@@ -78,9 +83,7 @@ const AboutPage = () => {
             <h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight fade-up">
               One Platform For Better Pet Shopping
             </h1>
-            <p
-              className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up"
-              style={{ animationDelay: "120ms" }}>
+            <p className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up anim-delay-120">
               PETZONE combines browsing, buying, and product management in one
               connected experience focused on speed, clarity, and trust.
             </p>
@@ -88,8 +91,8 @@ const AboutPage = () => {
         </section>
 
         <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14">
-          <section className="grid lg:grid-cols-5 gap-6 md:gap-8">
-            <div className="lg:col-span-3 brand-card about-content-flat p-6 md:p-8 fade-up">
+          <section className="grid lg:grid-cols-2 gap-8 md:gap-10">
+            <div className="brand-card about-content-flat p-6 md:p-8 fade-up">
               <h2 className="text-2xl md:text-3xl font-black mb-4">
                 Our Story
               </h2>
@@ -103,38 +106,25 @@ const AboutPage = () => {
                 From category browsing in Shop to direct communication in
                 Contact, every page follows one brand language.
               </p>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed mb-6">
                 Our goal is straightforward: help pet owners find better
                 products faster while keeping the platform clean, reliable, and
                 easy to use.
               </p>
             </div>
 
-            <div
-              className="lg:col-span-2 brand-card about-content-flat p-6 md:p-8 fade-up"
-              style={{ animationDelay: "90ms" }}>
-              <h3 className="text-xl font-black mb-4">Core Values</h3>
-              <ul className="space-y-3">
-                {values.map((value) => (
-                  <li
-                    key={value}
-                    className="flex items-start gap-2 text-slate-700">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-700 mt-0.5" />
-                    <span>{value}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-6 rounded-2xl bg-cyan-50 border border-cyan-100 p-4">
-                <div className="flex items-center gap-2 text-cyan-800 font-semibold mb-1">
-                  <ShieldCheck className="w-4 h-4" />
-                  Reliable Platform
-                </div>
-                <p className="text-slate-600 text-sm">
-                  Built with a practical architecture for smooth current usage
-                  and future growth.
-                </p>
-              </div>
+            <div className="brand-card about-content-flat p-6 md:p-8 fade-up anim-delay-90 flex items-center justify-center min-h-96">
+              <Lottie
+                animationData={DeveloperAnimation}
+                loop
+                autoplay
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  maxWidth: "400px",
+                  maxHeight: "400px",
+                }}
+              />
             </div>
           </section>
 
@@ -144,8 +134,7 @@ const AboutPage = () => {
               return (
                 <article
                   key={item.title}
-                  className="brand-card about-content-flat p-6 transition duration-300 fade-up"
-                  style={{ animationDelay: `${idx * 80}ms` }}>
+                  className={`brand-card about-content-flat p-6 transition duration-300 fade-up ${getDelayClass(idx * 80)}`}>
                   <div className="brand-icon mb-4">
                     <Icon className="w-5 h-5 text-cyan-700" />
                   </div>
@@ -164,8 +153,7 @@ const AboutPage = () => {
               return (
                 <article
                   key={item.title}
-                  className="brand-card about-content-flat p-6 fade-up"
-                  style={{ animationDelay: `${120 + idx * 70}ms` }}>
+                  className={`brand-card about-content-flat p-6 fade-up ${getDelayClass(120 + idx * 70)}`}>
                   <div className="brand-icon mb-4">
                     <Icon className="w-5 h-5 text-cyan-700" />
                   </div>
@@ -178,9 +166,33 @@ const AboutPage = () => {
             })}
           </section>
 
-          <section
-            className="mt-10 brand-card about-content-flat p-6 md:p-8 fade-up"
-            style={{ animationDelay: "200ms" }}>
+          <section className="mt-10 brand-card about-content-flat p-6 md:p-8 fade-up anim-delay-120">
+            <h2 className="text-2xl md:text-3xl font-black mb-6">
+              Core Values
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              {values.map((value) => (
+                <div
+                  key={value}
+                  className="flex items-start gap-3 p-4 rounded-lg bg-cyan-50 border border-cyan-100">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-700 mt-0.5 flex-shrink-0" />
+                  <span className="text-slate-700 font-semibold">{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="rounded-2xl bg-cyan-50 border border-cyan-100 p-4 mb-6">
+              <div className="flex items-center gap-2 text-cyan-800 font-semibold mb-1">
+                <ShieldCheck className="w-4 h-4" />
+                Reliable Platform
+              </div>
+              <p className="text-slate-600 text-sm">
+                Built with a practical architecture for smooth current usage and
+                future growth.
+              </p>
+            </div>
+          </section>
+
+          <section className="mt-10 brand-card about-content-flat p-6 md:p-8 fade-up anim-delay-200">
             <div className="flex flex-wrap items-start justify-between gap-5">
               <div className="max-w-2xl">
                 <h3 className="text-2xl md:text-3xl font-black mb-2">
@@ -214,36 +226,6 @@ const AboutPage = () => {
             </div>
           </section>
         </main>
-
-        <style>{`
-          .about-content-flat,
-          .about-content-flat:hover {
-            border: 0 !important;
-            box-shadow: none !important;
-            transform: none !important;
-          }
-
-          .fade-up {
-            animation: fadeUp 0.7s ease both;
-          }
-
-          @keyframes fadeUp {
-            from {
-              opacity: 0;
-              transform: translateY(14px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            .fade-up {
-              animation: none !important;
-            }
-          }
-        `}</style>
       </div>
 
       <Footer />
