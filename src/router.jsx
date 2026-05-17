@@ -8,10 +8,12 @@ import ViewdetailDash from "./components/Dashboard/ViewDetailDash";
 import TableView from "./components/Dashboard/TableView";
 import InsertStore from "./components/Dashboard/InsertStore";
 import UpdateStore from "./components/Dashboard/UpdateStore";
+import Profile from "./components/Dashboard/Profile";
 import AboutUs from "./components/Dashboard/AboutUs";
 import Contact from "./components/Dashboard/contact";
 import Shop from "./pages/Shop";
 import Checkout from "./pages/Checkout";
+import Admin from "./pages/Admin";
 
 export const router = createBrowserRouter([
   {
@@ -86,6 +88,18 @@ export const router = createBrowserRouter([
         path: "UpdateStore",
         element: <UpdateStore />,
       },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
     ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AuthGuard>
+        <Admin />
+      </AuthGuard>
+    ),
   },
 ]);

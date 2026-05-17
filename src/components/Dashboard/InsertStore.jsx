@@ -101,7 +101,7 @@ const InsertStore = () => {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Category
+                  Pet Category
                 </label>
                 <select
                   className="w-full rounded-xl border border-cyan-200 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-200"
@@ -120,7 +120,7 @@ const InsertStore = () => {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Type
+                  Product Type
                 </label>
                 <select
                   className="w-full rounded-xl border border-cyan-200 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-200"

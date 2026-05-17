@@ -44,6 +44,13 @@ const Sidebar = () => {
           Dashboard
         </Link>
 
+        <Link
+          to="/DashboardView/profile"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
+          <i className="bi bi-person-badge text-lg" />
+          Profile
+        </Link>
+
         <div>
           <button
             onClick={() => setPetOpen(!petOpen)}
@@ -81,6 +88,13 @@ const Sidebar = () => {
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
           <i className="bi bi-bag-plus-fill text-lg" />
           Insert Store
+        </Link>
+
+        <Link
+          to="/admin"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
+          <i className="bi bi-person-gear text-lg" />
+          User Management
         </Link>
 
         <button

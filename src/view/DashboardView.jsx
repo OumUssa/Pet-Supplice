@@ -8,6 +8,7 @@ const DashboardView = () => {
   const pageTitle = useMemo(() => {
     const map = {
       "/DashboardView": "Dashboard Overview",
+      "/DashboardView/profile": "Profile",
       "/DashboardView/tableview": "Inventory Table",
       "/DashboardView/insertStore": "Insert Product",
       "/DashboardView/UpdateStore": "Update Product",

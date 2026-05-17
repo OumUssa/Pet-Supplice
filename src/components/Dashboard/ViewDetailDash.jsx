@@ -165,40 +165,7 @@ const ViewdetailDash = () => {
         </section>
       </div>
 
-      <section className="rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm">
-        <div className="mb-3">
-          <h3 className="text-lg font-semibold text-slate-900">
-            Category Share
-          </h3>
-          <p className="text-sm text-slate-500">
-            Percentage distribution of inventory.
-          </p>
-        </div>
 
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={stats}
-                dataKey="count"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={110}
-                label>
-                {stats.map((entry, index) => (
-                  <Cell
-                    key={`pie-${entry.name}`}
-                    fill={chartColors[index % chartColors.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
     </div>
   );
 };

@@ -178,10 +178,10 @@ const TableView = () => {
                 Name
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                Category
+                Pet Category
               </th>
               <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                Type
+                Product Type
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
                 Price ($)
