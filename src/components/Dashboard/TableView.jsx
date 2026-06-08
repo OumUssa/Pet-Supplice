@@ -21,7 +21,11 @@ const TableView = () => {
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState("All");
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [deleteModal, setDeleteModal] = useState({ show: false, id: null, title: "" });
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    id: null,
+    title: "",
+  });
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
@@ -69,7 +73,7 @@ const TableView = () => {
           const typeName = tMap[pet.type_product_id] || "Unknown";
 
           console.log(
-            `📍 Product: ${pet.title} → Category: ${categoryName} (ID: ${pet.pet_category_id}), Type: ${typeName} (ID: ${pet.type_product_id})`
+            `📍 Product: ${pet.title} → Category: ${categoryName} (ID: ${pet.pet_category_id}), Type: ${typeName} (ID: ${pet.type_product_id})`,
           );
 
           return {
@@ -137,8 +141,7 @@ const TableView = () => {
     const sameCategory = catA.includes(catB) || catB.includes(catA);
 
     const sameType =
-      selectedType === "All" ||
-      normalise(pet.Type) === normalise(selectedType);
+      selectedType === "All" || normalise(pet.Type) === normalise(selectedType);
 
     const keyword = searchKeyword.trim().toLowerCase();
     const sameKeyword =
@@ -306,7 +309,7 @@ const TableView = () => {
                 <td className="px-6 py-4 text-center text-sm text-slate-600">
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${formatTypeClass(
-                      pet.Type
+                      pet.Type,
                     )}`}>
                     {pet.Type}
                   </span>
@@ -361,8 +364,12 @@ const TableView = () => {
                   <i className="bi bi-exclamation-triangle text-red-600 text-lg" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Delete Product</h3>
-                  <p className="text-xs text-slate-500">This action cannot be undone</p>
+                  <h3 className="font-semibold text-slate-900">
+                    Delete Product
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    This action cannot be undone
+                  </p>
                 </div>
               </div>
             </div>
@@ -370,7 +377,11 @@ const TableView = () => {
             {/* Body */}
             <div className="px-6 py-4">
               <p className="text-slate-700">
-                Are you sure you want to delete <span className="font-semibold text-slate-900">"{deleteModal.title}"</span>?
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-slate-900">
+                  "{deleteModal.title}"
+                </span>
+                ?
               </p>
               <p className="mt-2 text-sm text-slate-500">
                 The product will be permanently removed from your store.
@@ -382,15 +393,13 @@ const TableView = () => {
               <button
                 onClick={cancelDelete}
                 disabled={deleting}
-                className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 font-medium text-white transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 font-medium text-white transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
                 {deleting ? (
                   <>
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent" />
