@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { userStore } from "../../store/RegisterStore";
+import { loginUser } from "../../API/api";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../Base/BaseToast";
 
@@ -47,24 +47,26 @@ export default function LoginForm() {
     if (!validate()) return;
 
     try {
-      const data = (await userStore.getUser()) || [];
-      const inputEmail = form.email.trim().toLowerCase();
-      const inputPassword = form.password;
+      const data = await loginUser({
+        email: form.email,
+        password: form.password,
+      });
 
-      const user = data.find(
-        (el) =>
-          (el.email || "").trim().toLowerCase() === inputEmail &&
-          el.password === inputPassword,
-      );
-
-      if (user) {
-        localStorage.setItem("tokenPet", user.id);
+      if (data) {
+        localStorage.setItem("tokenPet", data.id || data.token || form.email);
+        showSuccess("Login successful!");
         navigate("/", { replace: true });
       } else {
+        console.warn("⚠️ No data returned from login");
         setError((prev) => ({ ...prev, password: "Invalid credentials" }));
       }
     } catch (err) {
-      console.error("Failed fetching users:", err);
+      console.error("❌ Login failed:", err);
+      setError((prev) => ({
+        ...prev,
+        password: err.message || "Invalid credentials",
+      }));
+      showError(err.message || "Login failed");
     }
   };
 

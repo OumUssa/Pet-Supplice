@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { userStore } from "../../store/RegisterStore";
+import { registerUser } from "../../API/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
@@ -58,26 +58,31 @@ export default function Signup() {
     if (!validate()) return;
 
     try {
-      const data = await userStore.createUser({
+    
+      const data = await registerUser({
         name: form.username,
         email: form.email,
         password: form.password,
       });
 
-      if (data && data.length > 0) {
+      if (data) {
+        
         setSuccess("User created successfully!");
         setForm({ username: "", email: "", password: "" });
+        // Optionally redirect after short delay
+        setTimeout(() => navigate("/signin"), 1500);
       } else {
+       
         setError((prev) => ({
           ...prev,
           email: "Failed to create user. Try again.",
         }));
       }
     } catch (err) {
-      console.error(err);
+      console.error("❌ Registration failed:", err);
       setError((prev) => ({
         ...prev,
-        email: "An error occurred. Try again.",
+        email: err.message || "An error occurred. Try again.",
       }));
     }
   };

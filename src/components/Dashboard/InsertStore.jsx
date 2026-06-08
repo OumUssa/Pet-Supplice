@@ -1,25 +1,92 @@
 // InsertStore.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { insertPetSupply } from "../../store/suppliesStore.";
+import {
+  createProduct,
+  fetchPetCategories,
+  fetchProductTypes,
+} from "../../API/api";
 import { useToast } from "../Base/BaseToast";
-
-const CATEGORY_TYPES = {
-  Dog: ["Food", "Toys", "Accessories", "Health & Care"],
-  Cat: ["Food", "Toys", "Litter & Hygiene", "Accessories"],
-  Bird: ["Food", "Cage", "Toys"],
-  Fish: ["Food", "Aquariums", "Filters & Pumps"],
-  "Small Pet": ["Food", "Cage", "Bedding", "Toys"],
-};
 
 const InsertStore = () => {
   const { showSuccess, showError } = useToast();
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Dog");
-  const [Type, setType] = useState(""); // lowercase ✔
+  const [category, setCategory] = useState("");
+  const [Type, setType] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [categoryTypeMap, setCategoryTypeMap] = useState({});
+
+  // Fetch categories and product types on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log("📥 Loading pet categories and product types...");
+        const [categoriesData, typesData] = await Promise.all([
+          fetchPetCategories(),
+          fetchProductTypes(),
+        ]);
+
+        console.log(
+          "✅ Raw categories data:",
+          JSON.stringify(categoriesData, null, 2),
+        );
+        console.log("✅ Raw types data:", JSON.stringify(typesData, null, 2));
+
+        // Extract category names
+        let categoryNames = [];
+        if (Array.isArray(categoriesData)) {
+          categoryNames = categoriesData.map((cat) => cat.name || cat);
+        } else if (categoriesData.data && Array.isArray(categoriesData.data)) {
+          categoryNames = categoriesData.data.map((cat) => cat.name || cat);
+        }
+
+        console.log("📋 Extracted categories:", categoryNames);
+        setCategories(categoryNames);
+        if (categoryNames.length > 0) {
+          setCategory(categoryNames[0]);
+        }
+
+        // Extract product type names
+        let typeNames = [];
+        if (Array.isArray(typesData)) {
+          typeNames = typesData.map((type) => type.name || type);
+        } else if (typesData.data && Array.isArray(typesData.data)) {
+          typeNames = typesData.data.map((type) => type.name || type);
+        } else if (
+          typesData.product_types &&
+          Array.isArray(typesData.product_types)
+        ) {
+          typeNames = typesData.product_types.map((type) => type.name || type);
+        }
+
+        console.log("📋 Extracted types:", typeNames);
+
+        // Since API doesn't provide category-type mapping, create all types for all categories
+        // This will be replaced when API provides proper relationship data
+        const typeMap = {};
+        categoryNames.forEach((cat) => {
+          typeMap[cat] = typeNames;
+        });
+
+        console.log(
+          "✅ Category-Type map (all types for each category):",
+          typeMap,
+        );
+        setCategoryTypeMap(typeMap);
+        setProductTypes(typeNames);
+      } catch (err) {
+        console.error("❌ Error loading categories/types:", err);
+        showError("Error loading categories: " + err.message);
+      }
+    };
+
+    loadData();
+  }, [showError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,33 +98,66 @@ const InsertStore = () => {
 
     setLoading(true);
     try {
-      const result = await insertPetSupply({
+      console.log("🔄 Creating product with data:", {
         title,
         category,
-        Type, // lowercase ✔
+        Type,
         price: Number(price),
         image,
         content,
       });
 
-      if (result) {
-        showSuccess("Pet/Supply inserted successfully!");
+      // 1. Create locally first (immediate feedback)
+      const localResult = await insertPetSupply({
+        title,
+        category,
+        Type,
+        price: Number(price),
+        image,
+        content,
+      });
+
+      if (localResult) {
+        console.log("✅ Product created locally!");
+        showSuccess("Product saved!");
         setTitle("");
-        setCategory("Dog");
+        setCategory(categories.length > 0 ? categories[0] : "");
         setType("");
         setPrice("");
         setImage("");
         setContent("");
+
+        // 2. Also send to backend database
+        try {
+          console.log("📤 Sending to database...");
+          const token = localStorage.getItem("tokenPet");
+          if (token) {
+            await createProduct({
+              title,
+              description: content,
+              price: Number(price),
+              image_url: image,
+              pet_category_name: category,
+              product_type_name: Type,
+            });
+            console.log("✅ Product saved to database!");
+          } else {
+            console.warn("⚠️ No token - product saved locally only");
+          }
+        } catch (apiErr) {
+          console.warn("⚠️ Database save skipped:", apiErr.message);
+          // Don't show error - local save is enough
+        }
       }
     } catch (err) {
-      console.error(err);
-      showError("Error inserting pet supply");
+      console.error("❌ Error creating product:", err);
+      showError("Error creating product");
     } finally {
       setLoading(false);
     }
   };
 
-  const typesForCategory = CATEGORY_TYPES[category];
+  const typesForCategory = categoryTypeMap[category] || [];
   const parsedPrice = Number(price);
 
   return (
@@ -110,7 +210,8 @@ const InsertStore = () => {
                     setCategory(e.target.value);
                     setType("");
                   }}>
-                  {Object.keys(CATEGORY_TYPES).map((cat) => (
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>

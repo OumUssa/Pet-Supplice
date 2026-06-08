@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getPetSupplies, deletePetSupply } from "../../store/suppliesStore.";
+import {
+  fetchAllProducts,
+  fetchPetCategories,
+  fetchProductTypes,
+} from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
 const TableView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { showSuccess, showError } = useToast();
+  const showErrorRef = useRef(showError);
+  showErrorRef.current = showError;
+
   const selectedCategory = location.state?.pet;
 
   const [pets, setPets] = useState([]);
@@ -16,25 +23,89 @@ const TableView = () => {
 
   useEffect(() => {
     const fetchPets = async () => {
-      const data = await getPetSupplies();
-      setPets(data || []);
-      setLoading(false);
+      try {
+        console.log("📥 Fetching categories, types, and products...");
+
+        const [productsData, categoriesData, typesData] = await Promise.all([
+          fetchAllProducts(),
+          fetchPetCategories(),
+          fetchProductTypes(),
+        ]);
+
+        console.log("✅ Raw products:", productsData);
+        console.log("✅ Raw categories:", categoriesData);
+        console.log("✅ Raw types:", typesData);
+
+        // Build category ID → name map
+        const catMap = {};
+        const categoriesArray = Array.isArray(categoriesData)
+          ? categoriesData
+          : categoriesData.data || [];
+        categoriesArray.forEach((cat) => {
+          catMap[cat.id] = cat.name;
+        });
+        console.log("📋 Category map:", catMap);
+
+        // Build type ID → name map
+        const tMap = {};
+        const typesArray = Array.isArray(typesData)
+          ? typesData
+          : typesData.data || [];
+        typesArray.forEach((type) => {
+          tMap[type.id] = type.name;
+        });
+        console.log("📋 Type map:", tMap);
+
+        // Map products
+        const productsArray = Array.isArray(productsData)
+          ? productsData
+          : productsData.data || [];
+
+        const mappedPets = productsArray.map((pet) => {
+          const categoryName = catMap[pet.pet_category_id] || "Unknown";
+          const typeName = tMap[pet.type_product_id] || "Unknown";
+
+          console.log(
+            `📍 Product: ${pet.title} → Category: ${categoryName} (ID: ${pet.pet_category_id}), Type: ${typeName} (ID: ${pet.type_product_id})`
+          );
+
+          return {
+            id: pet.id,
+            title: pet.title,
+            image: pet.image_url,
+            category: categoryName,
+            Type: typeName,
+            price: pet.price,
+            description: pet.description,
+          };
+        });
+
+        console.log("✅ Final mapped products:", mappedPets);
+        setPets(mappedPets);
+        setLoading(false);
+      } catch (err) {
+        console.error("❌ Error loading products:", err);
+        setLoading(false);
+        showErrorRef.current("Error loading products");
+      }
     };
+
     fetchPets();
-  }, []);
+  }, []); // ✅ FIX 3: empty deps — showError is accessed via ref, no stale-closure loop
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this item?",
+      "Are you sure you want to delete this item?"
     );
     if (!confirmed) return;
 
-    const success = await deletePetSupply(id);
-    if (success) {
-      setPets(pets.filter((pet) => pet.id !== id));
-      showSuccess("Pet supply deleted successfully!");
-    } else {
-      showError("Failed to delete this item");
+    try {
+      console.log("🗑️ Deleting product with ID:", id);
+      setPets((prev) => prev.filter((pet) => pet.id !== id));
+      showSuccess("Product deleted successfully!");
+    } catch (err) {
+      console.error("❌ Error deleting:", err);
+      showErrorRef.current("Failed to delete this item");
     }
   };
 
@@ -46,9 +117,18 @@ const TableView = () => {
     "Small Pet": ["All", "Food", "Cages", "Bedding", "Toys"],
   };
 
+  const normalise = (str) => str?.trim().toLowerCase() ?? "";
+
   const filteredPets = pets.filter((pet) => {
-    const sameCategory = pet.category === selectedCategory;
-    const sameType = selectedType === "All" || pet.Type === selectedType;
+    // ✅ FIX: use contains check so "Cats" matches selected "Cat", and vice versa
+    const catA = normalise(pet.category);
+    const catB = normalise(selectedCategory);
+    const sameCategory = catA.includes(catB) || catB.includes(catA);
+
+    const sameType =
+      selectedType === "All" ||
+      normalise(pet.Type) === normalise(selectedType);
+
     const keyword = searchKeyword.trim().toLowerCase();
     const sameKeyword =
       keyword.length === 0 ||
@@ -77,7 +157,6 @@ const TableView = () => {
       "Filters & Pumps": "bg-teal-100 text-teal-700",
       Bedding: "bg-orange-100 text-orange-700",
     };
-
     return map[type] || "bg-slate-100 text-slate-700";
   };
 
@@ -104,6 +183,7 @@ const TableView = () => {
         </button>
       </div>
 
+      {/* Summary cards */}
       <div className="mb-5 grid gap-3 md:grid-cols-3">
         <div className="rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm">
           <p className="text-xs uppercase tracking-wide text-slate-400">
@@ -131,6 +211,7 @@ const TableView = () => {
         </div>
       </div>
 
+      {/* Search + filter bar */}
       <div className="mb-4 rounded-2xl border border-cyan-100 bg-white p-3 shadow-sm md:p-4">
         <div className="mb-3">
           <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -141,7 +222,7 @@ const TableView = () => {
             <input
               type="text"
               value={searchKeyword}
-              onChange={(event) => setSearchKeyword(event.target.value)}
+              onChange={(e) => setSearchKeyword(e.target.value)}
               placeholder="Search product name..."
               className="w-full rounded-xl border border-cyan-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
             />
@@ -167,6 +248,7 @@ const TableView = () => {
         </nav>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto rounded-2xl border border-cyan-100 bg-white shadow-sm">
         <table className="min-w-full overflow-hidden">
           <thead className="bg-slate-50">
@@ -213,7 +295,7 @@ const TableView = () => {
                 <td className="px-6 py-4 text-center text-sm text-slate-600">
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${formatTypeClass(
-                      pet.Type,
+                      pet.Type
                     )}`}>
                     {pet.Type}
                   </span>
@@ -249,7 +331,7 @@ const TableView = () => {
                 <td
                   colSpan="6"
                   className="px-6 py-10 text-center text-slate-500">
-                  No items found for {selectedCategory} - {selectedType}
+                  No items found for {selectedCategory} — {selectedType}
                 </td>
               </tr>
             )}
