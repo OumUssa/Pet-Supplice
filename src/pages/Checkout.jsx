@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Header/Footer";
-import { getPetSupplies } from "../store/suppliesStore.";
+import { fetchPublicProducts } from "../API/api";
 
 const ORDERS_KEY = "petstore_orders";
 
@@ -53,10 +53,18 @@ export default function Checkout() {
         return;
       }
 
-      const supplies = (await getPetSupplies()) || [];
-      const found = supplies.find((p) => String(p.id) === String(itemId));
-      setItem(found || null);
-      setLoading(false);
+      try {
+        console.log("📥 Fetching products to find itemId:", itemId);
+        const supplies = (await fetchPublicProducts()) || [];
+        const found = supplies.find((p) => String(p.id) === String(itemId));
+        console.log("✅ Found product:", found);
+        setItem(found || null);
+      } catch (error) {
+        console.error("❌ Error fetching product:", error);
+        setItem(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     hydrate();
@@ -161,7 +169,7 @@ export default function Checkout() {
               <h2 className="text-xl font-black mb-4">Order Summary</h2>
               <div className="rounded-xl overflow-hidden border border-teal-100 mb-4">
                 <img
-                  src={item.image}
+                  src={item.image || item.image_url}
                   alt={item.title}
                   className="w-full h-44 object-cover"
                 />

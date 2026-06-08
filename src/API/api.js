@@ -376,3 +376,67 @@ export const deleteProduct = async (productName) => {
     throw error;
   }
 };
+
+export const fetchPublicProducts = async () => {
+  try {
+    console.log(
+      "📤 Fetching all public products from:",
+      `${API_BASE_URL}/products`,
+    );
+
+    const response = await fetch(`${API_BASE_URL}/products`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    console.log("📥 Response status:", response.status);
+    console.log("📥 Response headers:", {
+      contentType: response.headers.get("content-type"),
+      status: response.status,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Server error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("📋 Raw products data:", JSON.stringify(data, null, 2));
+
+    // Extract products array from response
+    let productsArray = [];
+    if (Array.isArray(data)) {
+      productsArray = data;
+    } else if (data?.data && Array.isArray(data.data)) {
+      productsArray = data.data;
+    } else if (data?.products && Array.isArray(data.products)) {
+      productsArray = data.products;
+    }
+
+    // Map to shop format
+    const mappedProducts = productsArray.map((product) => ({
+      id: product.id,
+      title: product.title,
+      image: product.image_url,
+      image_url: product.image_url,
+      category:
+        product.pet_category_name || product.category || "Uncategorized",
+      Type: product.product_type_name || product.type || "Uncategorized",
+      price: Number(product.price) || 0,
+      description: product.description,
+      content: product.description,
+    }));
+
+    console.log("✅ Public products fetched successfully:", mappedProducts);
+    return mappedProducts;
+  } catch (error) {
+    console.error("❌ Fetch public products error:", error.message);
+    console.error("Full error object:", error);
+    throw error;
+  }
+};

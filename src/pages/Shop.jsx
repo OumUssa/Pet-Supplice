@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Header/Footer";
-import { getPetSupplies } from "../store/suppliesStore.";
+import { fetchPublicProducts } from "../API/api";
 
 const categoryOrder = ["Dog", "Cat", "Bird", "Fish", "Small Pet"];
 
@@ -19,9 +19,17 @@ export default function Shop() {
 
   useEffect(() => {
     const load = async () => {
-      const data = (await getPetSupplies()) || [];
-      setItems(data);
-      setLoading(false);
+      try {
+        console.log("📥 Loading public products for shop...");
+        const data = (await fetchPublicProducts()) || [];
+        console.log("✅ Shop products loaded:", data);
+        setItems(data);
+      } catch (error) {
+        console.error("❌ Error loading products:", error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     load();
