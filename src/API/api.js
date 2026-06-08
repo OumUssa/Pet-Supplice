@@ -88,6 +88,92 @@ export const loginUser = async (credentials) => {
   }
 };
 
+export const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    console.log("📤 Fetching user profile from:", `${API_BASE_URL}/user`);
+    console.log("🔐 Token:", token ? "Present" : "Missing");
+
+    const response = await fetch(`${API_BASE_URL}/user`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("📥 Response status:", response.status);
+    console.log("📥 Response headers:", {
+      contentType: response.headers.get("content-type"),
+      status: response.status,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Server error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("✅ User profile fetched successfully:", data);
+
+    // Extract the user object from the nested response
+    const userData = data.user || data;
+    console.log("📋 Extracted user data:", userData);
+
+    return userData;
+  } catch (error) {
+    console.error("❌ Fetch user profile error:", error.message);
+    console.error("Full error object:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (profileData) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const payload = {
+      name: profileData.name,
+      email: profileData.email,
+      password: profileData.password,
+      avatar: profileData.avatar,
+    };
+
+    console.log("📤 Updating user profile to:", `${API_BASE_URL}/user`);
+    console.log("📋 Payload:", payload);
+    console.log("🔐 Token:", token ? "Present" : "Missing");
+
+    const response = await fetch(`${API_BASE_URL}/user`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("📥 Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Server error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("✅ User profile updated successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("❌ Update user profile error:", error.message);
+    console.error("Full error object:", error);
+    throw error;
+  }
+};
+
 export const createProduct = async (productData) => {
   try {
     const token = localStorage.getItem("tokenPet");
@@ -142,13 +228,14 @@ export const createProduct = async (productData) => {
 export const fetchAllProducts = async () => {
   try {
     const token = localStorage.getItem("tokenPet");
-    console.log("📤 Fetching products from:", `${API_BASE_URL}/products`);
+    console.log("📤 Fetching products from:", `${API_BASE_URL}/userProduct`);
     console.log("🔐 Token:", token ? "Present" : "Missing");
 
-    const response = await fetch(`${API_BASE_URL}/products`, {
+    const response = await fetch(`${API_BASE_URL}/userProduct`, {
       method: "GET",
       mode: "cors",
       headers: {
+        "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
@@ -243,8 +330,49 @@ export const fetchProductTypes = async () => {
     console.log("✅ Product types fetched successfully");
     return data;
   } catch (error) {
-    console.error("❌ Fetch product types error:", error.message);
+    console.log("❌ Fetch product types error:", error.message);
     console.error("Full error:", error);
+    throw error;
+  }
+};
+
+export const deleteProduct = async (productName) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    console.log(
+      "📤 Sending delete request to:",
+      `${API_BASE_URL}/products/${productName}`,
+    );
+    console.log("🔐 Token:", token ? "Present" : "Missing");
+
+    const response = await fetch(`${API_BASE_URL}/products/${productName}`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("📥 Response status:", response.status);
+    console.log("📥 Response headers:", {
+      contentType: response.headers.get("content-type"),
+      status: response.status,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Server error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("✅ Product deleted successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("❌ Delete product error:", error.message);
+    console.error("Full error object:", error);
     throw error;
   }
 };

@@ -2,15 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updatePetSupply } from "../../store/suppliesStore.";
+import { fetchPetCategories, fetchProductTypes } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
-
-const CATEGORY_TYPES = {
-  Dog: ["Food", "Toys", "Accessories", "Health & Care"],
-  Cat: ["Food", "Toys", "Litter & Hygiene", "Accessories"],
-  Bird: ["Food", "Cages", "Toys"],
-  Fish: ["Food", "Aquariums", "Filters & Pumps"],
-  "Small Pet": ["Food", "Cages", "Bedding", "Toys"],
-};
 
 const UpdateStore = () => {
   const location = useLocation();
@@ -19,19 +12,89 @@ const UpdateStore = () => {
   const item = location.state?.item; // item passed from TableView
 
   const [title, setTitle] = useState(item?.title || "");
-  const [category, setCategory] = useState(item?.category || "Dog");
+  const [category, setCategory] = useState(item?.category || "");
   const [Type, setType] = useState(item?.Type || "");
   const [price, setPrice] = useState(item?.price || "");
   const [image, setImage] = useState(item?.image || "");
-  const [content, setContent] = useState(item?.content || "");
+  const [content, setContent] = useState(item?.description || "");
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [categoryTypeMap, setCategoryTypeMap] = useState({});
 
-  // get types for selected category
-  const typesForCategory = CATEGORY_TYPES[category];
-  const parsedPrice = Number(price);
+  // Fetch categories and product types on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log("📥 Loading pet categories and product types...");
+        const [categoriesData, typesData] = await Promise.all([
+          fetchPetCategories(),
+          fetchProductTypes(),
+        ]);
+
+        console.log(
+          "✅ Raw categories data:",
+          JSON.stringify(categoriesData, null, 2),
+        );
+        console.log("✅ Raw types data:", JSON.stringify(typesData, null, 2));
+
+        // Extract category names
+        let categoryNames = [];
+        if (Array.isArray(categoriesData)) {
+          categoryNames = categoriesData.map((cat) => cat.name || cat);
+        } else if (categoriesData.data && Array.isArray(categoriesData.data)) {
+          categoryNames = categoriesData.data.map((cat) => cat.name || cat);
+        }
+
+        console.log("📋 Extracted categories:", categoryNames);
+        setCategories(categoryNames);
+
+        // Extract product type names
+        let typeNames = [];
+        if (Array.isArray(typesData)) {
+          typeNames = typesData.map((type) => type.name || type);
+        } else if (typesData.data && Array.isArray(typesData.data)) {
+          typeNames = typesData.data.map((type) => type.name || type);
+        } else if (
+          typesData.product_types &&
+          Array.isArray(typesData.product_types)
+        ) {
+          typeNames = typesData.product_types.map((type) => type.name || type);
+        }
+
+        console.log("📋 Extracted types:", typeNames);
+
+        // Since API doesn't provide category-type mapping, create all types for all categories
+        // This will be replaced when API provides proper relationship data
+        const typeMap = {};
+        categoryNames.forEach((cat) => {
+          typeMap[cat] = typeNames;
+        });
+
+        console.log(
+          "✅ Category-Type map (all types for each category):",
+          typeMap,
+        );
+        setCategoryTypeMap(typeMap);
+        setProductTypes(typeNames);
+      } catch (err) {
+        console.error("❌ Error loading categories/types:", err);
+        showError("Error loading categories: " + err.message);
+      }
+    };
+
+    loadData();
+  }, [showError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!item?.id) {
+      showError(
+        "No product selected. Please go back and select a product to edit.",
+      );
+      return;
+    }
 
     if (!title || !price || !image || !content || !Type) {
       showError("Please fill all fields");
@@ -40,6 +103,15 @@ const UpdateStore = () => {
 
     setLoading(true);
     try {
+      console.log("🔄 Updating product with data:", {
+        title,
+        category,
+        Type,
+        price: Number(price),
+        image,
+        content,
+      });
+
       const result = await updatePetSupply(item.id, {
         title,
         category,
@@ -50,27 +122,32 @@ const UpdateStore = () => {
       });
 
       if (result) {
+        console.log("✅ Product updated successfully!");
         showSuccess("Pet/Supply updated successfully!");
         navigate(-1); // go back to previous page
       }
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error updating product:", err);
       showError("Error updating pet supply");
     } finally {
       setLoading(false);
     }
   };
 
-  // Reset Type if category changes
-  useEffect(() => {
-    if (!typesForCategory.includes(Type)) {
-      setType("");
-    }
-  }, [category]);
+  const typesForCategory = categoryTypeMap[category] || [];
+  const parsedPrice = Number(price);
 
   return (
     <div className="min-h-screen rounded-3xl border border-cyan-100/80 bg-[linear-gradient(180deg,#f8fcff_0%,#eefdfb_100%)] p-4 md:p-6">
       <div className="mx-auto w-full max-w-6xl">
+        {!item && (
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-800">
+              ⚠️ No product selected. Please go back to the table and select a
+              product to edit.
+            </p>
+          </div>
+        )}
         <div className="mb-6 rounded-2xl border border-cyan-100 bg-white/90 p-5 shadow-sm backdrop-blur md:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
             Admin Product Edit
@@ -118,7 +195,8 @@ const UpdateStore = () => {
                     setCategory(e.target.value);
                     setType("");
                   }}>
-                  {Object.keys(CATEGORY_TYPES).map((cat) => (
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>

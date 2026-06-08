@@ -136,24 +136,53 @@ export async function updatePetSupply(
   id,
   { title, category, price, image, content, Type },
 ) {
-  const supplies = readSupplies();
-  const index = supplies.findIndex((item) => Number(item.id) === Number(id));
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const payload = {
+      title,
+      category,
+      Type,
+      price: Number(price),
+      image_url: image,
+      pet_category_name: category,
+      product_type_name: Type,
+      description: content,
+    };
 
-  if (index === -1) {
-    return null;
+    console.log(
+      "📤 Updating product:",
+      `http://127.0.0.1:8000/api/products/${title}`,
+    );
+    console.log("📋 Payload:", payload);
+    console.log("🔐 Token:", token ? "Present" : "Missing");
+
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/products/${title}`,
+      {
+        method: "PUT",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      },
+    );
+
+    console.log("📥 Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Server error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("✅ Product updated successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("❌ Update product error:", error.message);
+    console.error("Full error object:", error);
+    throw error;
   }
-
-  const updatedItem = {
-    ...supplies[index],
-    title,
-    category,
-    Type,
-    price: Number(price),
-    image,
-    content,
-  };
-
-  supplies[index] = updatedItem;
-  writeSupplies(supplies);
-  return [updatedItem];
 }

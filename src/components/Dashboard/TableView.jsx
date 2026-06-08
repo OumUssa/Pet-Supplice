@@ -4,6 +4,7 @@ import {
   fetchAllProducts,
   fetchPetCategories,
   fetchProductTypes,
+  deleteProduct,
 } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
@@ -20,6 +21,8 @@ const TableView = () => {
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState("All");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null, title: "" });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -93,20 +96,28 @@ const TableView = () => {
     fetchPets();
   }, []); // ✅ FIX 3: empty deps — showError is accessed via ref, no stale-closure loop
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this item?"
-    );
-    if (!confirmed) return;
+  const handleDelete = (id, title) => {
+    setDeleteModal({ show: true, id, title });
+  };
 
+  const confirmDelete = async () => {
+    setDeleting(true);
     try {
-      console.log("🗑️ Deleting product with ID:", id);
-      setPets((prev) => prev.filter((pet) => pet.id !== id));
+      console.log("🗑️ Deleting product:", deleteModal.title);
+      await deleteProduct(deleteModal.title);
+      setPets((prev) => prev.filter((pet) => pet.id !== deleteModal.id));
       showSuccess("Product deleted successfully!");
+      setDeleteModal({ show: false, id: null, title: "" });
     } catch (err) {
       console.error("❌ Error deleting:", err);
-      showErrorRef.current("Failed to delete this item");
+      showErrorRef.current("Failed to delete this item: " + err.message);
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModal({ show: false, id: null, title: "" });
   };
 
   const typeMenu = {
@@ -316,7 +327,7 @@ const TableView = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(pet.id)}
+                      onClick={() => handleDelete(pet.id, pet.title)}
                       className="inline-flex items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-rose-600">
                       <i className="bi bi-trash3" />
                       Delete
@@ -338,6 +349,64 @@ const TableView = () => {
           </tbody>
         </table>
       </div>
+
+      {/* ── DELETE CONFIRMATION MODAL ── */}
+      {deleteModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-red-200 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-slate-200 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                  <i className="bi bi-exclamation-triangle text-red-600 text-lg" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900">Delete Product</h3>
+                  <p className="text-xs text-slate-500">This action cannot be undone</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-4">
+              <p className="text-slate-700">
+                Are you sure you want to delete <span className="font-semibold text-slate-900">"{deleteModal.title}"</span>?
+              </p>
+              <p className="mt-2 text-sm text-slate-500">
+                The product will be permanently removed from your store.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+              <button
+                onClick={cancelDelete}
+                disabled={deleting}
+                className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 font-medium text-white transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? (
+                  <>
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-trash3" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -298,7 +298,7 @@ export default function Shop() {
         <div className="mt-10 text-center">
           <Link
             to="/"
-            className="inline-flex px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition">
+            className="inline-flex px-5 py-2.5 rounded text-white hover:bg-slate-100 transition">
             Back to Home
           </Link>
         </div>
