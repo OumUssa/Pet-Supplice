@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { userStore } from "../store/RegisterStore";
 import { useToast } from "../components/Base/BaseToast";
-import { fetchUserProfile, fetchAdminUserPurchases } from "../API/api";
+import { fetchUserProfile, fetchAdminUserPurchases, fetchAllUsers } from "../API/api";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const Admin = () => {
@@ -20,11 +20,13 @@ const Admin = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const data = await userStore.getUser();
+      const data = await fetchAllUsers();
       setUsers(data || []);
     } catch (error) {
       console.error(error);
-      showError("Failed to load users.");
+      // Fallback to empty list so UI doesn't crash
+      setUsers([]);
+      showError("Failed to load users from server.");
     } finally {
       setLoading(false);
     }
@@ -98,26 +100,24 @@ const Admin = () => {
       return;
     }
 
-    if (user.id.toString() === loggedInUserId) {
-      showInfo("You cannot delete the currently logged in user.");
-      return;
-    }
-
     const confirmed = window.confirm(
       `Delete user "${user.name || user.email}" permanently?`,
     );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     try {
-      const deleted = await userStore.deleteUser(user.id);
-      if (!deleted) {
-        showError("User not found.");
-        return;
-      }
-
+      const token = localStorage.getItem("tokenPet");
+      const res = await fetch(`https://petsupplice.cms-jubpet.linkpc.net/api/admin/users/${user.id}`, {
+        method: "DELETE",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       showSuccess("User deleted successfully.");
       await loadUsers();
     } catch (error) {

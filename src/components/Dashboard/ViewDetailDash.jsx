@@ -14,7 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { fetchAllProducts } from "../../API/api";
+import { fetchAllProducts, fetchPetCategories } from "../../API/api";
 
 const ViewdetailDash = () => {
   const [stats, setStats] = useState([]);
@@ -22,21 +22,33 @@ const ViewdetailDash = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadProducts = async () => {
+    let intervalId;
+
+    const loadProducts = async (isBackground = false) => {
+      if (!isBackground) setLoading(true);
       try {
-        console.log("📥 Fetching all products for dashboard...");
-        const products = await fetchAllProducts();
+        if (!isBackground) console.log("📥 Fetching all products for dashboard...");
+        const [products, categories] = await Promise.all([
+          fetchAllProducts(),
+          fetchPetCategories()
+        ]);
         setAllProducts(products);
+
+        const categoryLookup = {};
+        categories.forEach(c => categoryLookup[c.id] = c.name);
 
         // Group products by category
         const categoryMap = {};
         products.forEach((product) => {
           const category =
-            product.pet_category_name || product.category || "Uncategorized";
-          if (!categoryMap[category]) {
-            categoryMap[category] = [];
+            product.pet_category_name || product.category || categoryLookup[product.pet_category_id] || "Uncategorized";
+          
+          if (category !== "Uncategorized") {
+            if (!categoryMap[category]) {
+              categoryMap[category] = [];
+            }
+            categoryMap[category].push(product);
           }
-          categoryMap[category].push(product);
         });
 
         // Convert to stats format
@@ -48,18 +60,25 @@ const ViewdetailDash = () => {
           }),
         );
 
-        console.log("✅ Dashboard stats calculated:", statsData);
+        if (!isBackground) console.log("✅ Dashboard stats calculated:", statsData);
         setStats(statsData);
       } catch (error) {
         console.error("❌ Error fetching products:", error);
         // Fallback to empty stats
-        setStats([]);
+        if (!isBackground) setStats([]);
       } finally {
-        setLoading(false);
+        if (!isBackground) setLoading(false);
       }
     };
 
     loadProducts();
+
+    // Set up real-time polling every 10 seconds
+    intervalId = setInterval(() => {
+      loadProducts(true);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const monthlyOrders = [
@@ -82,17 +101,26 @@ const ViewdetailDash = () => {
     setLoading(true);
     try {
       console.log("🔄 Refreshing dashboard data...");
-      const products = await fetchAllProducts();
+      const [products, categories] = await Promise.all([
+        fetchAllProducts(),
+        fetchPetCategories()
+      ]);
       setAllProducts(products);
+
+      const categoryLookup = {};
+      categories.forEach(c => categoryLookup[c.id] = c.name);
 
       const categoryMap = {};
       products.forEach((product) => {
         const category =
-          product.pet_category_name || product.category || "Uncategorized";
-        if (!categoryMap[category]) {
-          categoryMap[category] = [];
+          product.pet_category_name || product.category || categoryLookup[product.pet_category_id] || "Uncategorized";
+          
+        if (category !== "Uncategorized") {
+          if (!categoryMap[category]) {
+            categoryMap[category] = [];
+          }
+          categoryMap[category].push(product);
         }
-        categoryMap[category].push(product);
       });
 
       const statsData = Object.entries(categoryMap).map(

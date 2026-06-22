@@ -160,8 +160,7 @@ const Home = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
+        /* Fonts inherited globally */
         @keyframes fadeUp    { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeIn    { from{opacity:0} to{opacity:1} }
         @keyframes scaleIn   { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
@@ -171,8 +170,8 @@ const Home = () => {
         @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes badgePulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.4)} 50%{box-shadow:0 0 0 8px rgba(16,185,129,0)} }
 
-        .home-root * { font-family:'Manrope',sans-serif; box-sizing:border-box; }
-        .home-root h1,.home-root h2,.home-root .syne { font-family:'Syne',sans-serif; }
+        .home-root * { font-family:inherit; box-sizing:border-box; }
+        .home-root h1,.home-root h2,.home-root .syne { font-family:inherit; }
 
         /* ── HERO SWIPER overrides ── */
         .hero-swiper { border-radius:24px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.14); }
@@ -247,6 +246,9 @@ const Home = () => {
           border-radius:18px; border:1.5px solid #e5e7eb;
           background:#fff; overflow:hidden;
           transition:transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
         .prod-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,.11); }
         .prod-card img { transition:transform .5s ease; }
@@ -571,9 +573,33 @@ const Home = () => {
                       }}>
                         <i className="bi bi-heart" style={{ fontSize: ".8rem", color: "#6b7280" }} />
                       </button>
+                      {/* Creator Info Overlay */}
+                      {item.creator_id && (
+                        <div
+                          className="absolute top-3 left-3 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-2 py-1.5 rounded-full shadow-sm hover:bg-white transition"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/user/${item.creator_id}`);
+                          }}
+                        >
+                          {item.creator_avatar ? (
+                            <img src={item.creator_avatar} alt={item.creator_name} className="w-6 h-6 rounded-full object-cover border border-slate-200" />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-[10px] font-bold">
+                              {item.creator_name?.charAt(0)?.toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex flex-col pr-1">
+                            <span className="text-[10px] font-bold text-slate-800 leading-none mb-0.5">{item.creator_name}</span>
+                            <span className="text-[9px] text-slate-500 leading-none">
+                              {new Date(item.created_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    <div style={{ padding: "14px 14px 16px" }}>
+                    <div style={{ padding: "14px 14px 16px", display: "flex", flexDirection: "column", flex: 1 }}>
                       <h3 style={{
                         margin: "0 0 3px", fontSize: ".875rem", fontWeight: 700, color: "#111827",
                         overflow: "hidden", display: "-webkit-box",
@@ -591,7 +617,7 @@ const Home = () => {
                       }}>
                         {item.description}
                       </p>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
                         <span className="syne" style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827" }}>
                           ${Number(item.price).toFixed(2)}
                         </span>

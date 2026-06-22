@@ -150,9 +150,9 @@ const InsertStore = () => {
         @keyframes barGrow  { from{width:0} to{width:100%} }
         @keyframes badgePop { 0%{transform:scale(0) rotate(-10deg)} 70%{transform:scale(1.12) rotate(2deg)} 100%{transform:scale(1) rotate(0)} }
 
-        .ins-root * { font-family:'Plus Jakarta Sans',sans-serif; box-sizing:border-box; }
+        .ins-root * { font-family:inherit; box-sizing:border-box; }
         .ins-root h1,
-        .ins-root h2 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; }
+        .ins-root h2 { font-family:inherit; font-weight:700; }
 
         /* stagger helpers */
         .s0{animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .05s both}
@@ -273,7 +273,7 @@ const InsertStore = () => {
 
         /* price highlight */
         .price-big {
-          font-family:'Instrument Serif',serif;
+          font-family:inherit;
           font-size:1.75rem; color:#111827; line-height:1;
         }
 

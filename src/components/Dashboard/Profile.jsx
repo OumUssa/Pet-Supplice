@@ -199,7 +199,7 @@ const Profile = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        /* Font inherited globally */
 
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp {
@@ -219,7 +219,7 @@ const Profile = () => {
           100% { transform: scale(1.35); opacity: 0;  }
         }
 
-        .profile-root * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+        .profile-root * { font-family: inherit; box-sizing: border-box; }
 
         /* card entrance */
         .card-1 { animation: fadeUp .55s cubic-bezier(.22,1,.36,1) .05s both; }

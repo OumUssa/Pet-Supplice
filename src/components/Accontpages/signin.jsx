@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { loginUser } from "../../API/api";
-import { useNavigate } from "react-router-dom";
+import { loginUser, directResetPassword } from "../../API/api";
+import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../Base/BaseToast";
 
 export default function LoginForm() {
@@ -8,10 +8,12 @@ export default function LoginForm() {
   const { showSuccess, showError } = useToast();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   const [forgotEmail, setForgotEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [forgotError, setForgotError] = useState("");
 
   useEffect(() => {
@@ -70,28 +72,30 @@ export default function LoginForm() {
     }
   };
 
-  // Forgot password verify
+  // Forgot password flow
   const handleVerifyEmail = async () => {
     if (!forgotEmail.trim()) {
       setForgotError("Email is required!");
       return;
     }
+    if (!newPassword.trim() || newPassword.length < 6) {
+      setForgotError("New password must be at least 6 characters.");
+      return;
+    }
     try {
-      const data = await userStore.getUser();
-      const user = data.find((el) => el.email === forgotEmail);
-      if (user) {
+      const data = await directResetPassword(forgotEmail, newPassword);
+      if (data && data.result) {
         setForgotError("");
         setShowForgotModal(false);
-        showSuccess(
-          "Email verified. Please create a new account password in register page.",
-        );
+        setForgotEmail("");
+        setNewPassword("");
+        showSuccess("Password changed successfully. You can now login!");
       } else {
-        setForgotError("Email not found!");
+        setForgotError(data?.message || "Failed to reset password");
       }
     } catch (err) {
       console.error(err);
-      setForgotError("Error verifying email");
-      showError("Error verifying email");
+      setForgotError(err.message || "Error resetting password");
     }
   };
 
@@ -178,16 +182,12 @@ export default function LoginForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition"
+                    className="absolute border-0 right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition"
                   >
-                    {showPassword ? <i className="bi bi-eye-slash-fill"></i> : <i className="bi bi-eye-fill"></i>}
+                    {showPassword ? <i className="bi bi-eye-slash-fill"></i> : <i className="bi bi-eye-fill "></i>}
                   </button>
                 </div>
-                <div className="flex justify-end mt-1">
-                  <Link to="/forgot-password" className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition">
-                    Forgot Password?
-                  </Link>
-                </div>
+
                 {error.password && (
                   <div className="text-red-500 mt-1 text-sm">
                     {error.password}
@@ -222,27 +222,42 @@ export default function LoginForm() {
       {showForgotModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-sm flex items-center justify-center text-slate-700 px-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm border border-emerald-100 shadow-2xl">
-            <h3 className="text-xl font-black mb-4">Verify Email</h3>
+            <h3 className="text-xl font-black mb-4">Reset Password</h3>
+            <p className="text-sm text-slate-500 mb-4">
+              Enter your email and a new password. If the email exists, your password will be updated instantly.
+            </p>
             <input
               type="email"
               value={forgotEmail}
               onChange={(e) => setForgotEmail(e.target.value)}
               placeholder="Enter your email"
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
               className="w-full px-4 py-2.5 border border-slate-300 rounded-xl mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             {forgotError && (
-              <div className="text-red-500 mb-2">{forgotError}</div>
+              <div className="text-red-500 mb-2 text-sm">{forgotError}</div>
             )}
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-4">
               <button
-                className="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300"
-                onClick={() => setShowForgotModal(false)}>
+                className="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300 transition font-medium"
+                onClick={() => {
+                  setShowForgotModal(false);
+                  setForgotError("");
+                  setForgotEmail("");
+                  setNewPassword("");
+                }}>
                 Cancel
               </button>
               <button
-                className="px-4 py-2 btn-primary rounded-lg"
+                className="px-4 py-2 btn-primary rounded-lg transition font-medium"
                 onClick={handleVerifyEmail}>
-                Verify
+                Change Password
               </button>
             </div>
           </div>

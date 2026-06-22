@@ -80,7 +80,7 @@ const AboutPage = () => {
             <p className="uppercase tracking-[0.18em] text-cyan-100 text-sm mb-3 fade-up">
               About PETZONE
             </p>
-            <h1 className="text-4xl md:text-6xl font-black max-w-4xl leading-tight fade-up">
+            <h1 className="text-2xl md:text-4xl font-black max-w-3xl leading-tight fade-up">
               One Platform For Better Pet Shopping
             </h1>
             <p className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up anim-delay-120">

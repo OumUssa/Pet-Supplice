@@ -116,15 +116,22 @@ export default function Checkout() {
       <Header />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 py-10">
-        <div className="rounded-3xl primary-gradient p-8 md:p-10 mb-8">
-          <p className="uppercase tracking-[0.15em] text-sm text-teal-100 mb-3">
-            Secure Checkout
-          </p>
-          <h1 className="text-2xl md:text-3xl font-black">Payment</h1>
-          <p className="mt-3 text-teal-50">
-            Complete your order safely in this frontend demo checkout.
-          </p>
-        </div>
+        <section className="relative overflow-hidden bg-[linear-gradient(140deg,#0f766e_0%,#0f172a_70%)] text-white rounded-3xl mb-8 py-12 md:py-16">
+          <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+          <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+            <p className="uppercase tracking-[0.18em] text-cyan-100 text-sm mb-3 fade-up">
+              Secure Checkout
+            </p>
+            <h1 className="text-2xl md:text-4xl font-black max-w-3xl leading-tight fade-up">
+              Complete Your Order Safely
+            </h1>
+            <p className="mt-5 text-cyan-50 text-lg max-w-2xl fade-up anim-delay-120">
+              Fill in your payment details below. Your order is protected with
+              secure checkout and instant confirmation.
+            </p>
+          </div>
+        </section>
 
         {loading ? (
           <p className="text-slate-600">Loading checkout...</p>

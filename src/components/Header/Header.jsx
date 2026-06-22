@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { fetchUserProfile } from "../../API/api";
+
 const Header = () => {
   const pettoken = localStorage.getItem("tokenPet");
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    if (pettoken) {
+      fetchUserProfile()
+        .then(setUserProfile)
+        .catch((err) => console.error("Failed to load user profile in header:", err));
+    }
+  }, [pettoken]);
   const navClass = ({ isActive }) =>
     `text-gray-700 navbar-link font-extrabold block px-5 py-3 transition-all duration-200 ${
       isActive
@@ -43,28 +54,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center justify-around space-x-4">
-          {/* Right side: search + user links */}
-          <div className="header-search">
-            <i
-              className="header-search__icon bi bi-search cursor-pointer"
-              role="button"
-              tabIndex={0}
-              onClick={submitSearch}
-              onKeyDown={onSearchKeyDown}
-              aria-label="Search"></i>
-
-            <input
-              type="text"
-              placeholder="Search for pets"
-              aria-label="Search for pets"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              onKeyDown={onSearchKeyDown}
-              className="header-search__input"
-            />
-          </div>
-
-          {/* User Links */}
+          {/* Right side: user links */}
           <div className="flex items-center space-x-4 text-emerald-700">
             {!pettoken ? (
               <div className="flex items-center space-x-2 whitespace-nowrap">
@@ -75,7 +65,7 @@ const Header = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm">
+                  className="px-4 py-2 text-sm font-semibold !text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm">
                   Register
                 </Link>
               </div>
@@ -93,15 +83,31 @@ const Header = () => {
             ) : (
               false
             )}
-            <div className="flex items-center h-auto">
+            <div className="flex items-center h-auto space-x-5 ml-5">
+              {pettoken ? (
+                <Link to="/DashboardView/profile" className="flex items-center space-x-2.5 group bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 px-2 py-1.5 rounded-full transition-all shadow-sm cursor-pointer">
+                  {userProfile?.avatar ? (
+                    <img 
+                      src={userProfile.avatar} 
+                      alt={userProfile.name} 
+                      className="w-10 h-10 shrink-0 rounded-full object-cover border-2 border-white shadow-sm transition"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 shrink-0 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-lg border-2 border-white shadow-sm transition">
+                      {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : <i className="bi bi-person-fill"></i>}
+                    </div>
+                  )}
+                  <span className="text-sm font-bold text-slate-700 hidden md:block pr-2">
+                    {userProfile?.name?.split(" ")[0] || "Profile"}
+                  </span>
+                </Link>
+              ) : (
+                <Link to="/signin">
+                  <i className="bi bi-person-fill text-3xl text-slate-600 hover:text-emerald-500 transition"></i>
+                </Link>
+              )}
               <a href="#">
-                <i className="bi bi-person-fill text-2xl"></i>
-              </a>
-              <a href="#">
-                <i className="bi bi-heart-fill text-2xl mx-5"></i>
-              </a>
-              <a href="#">
-                <i className="bi bi-cart-fill header-cart-icon"></i>
+                <i className="bi bi-heart-fill text-2xl text-emerald-700 hover:text-rose-500 transition cursor-pointer"></i>
               </a>
             </div>
           </div>

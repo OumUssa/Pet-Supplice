@@ -45,7 +45,7 @@ const DashboardView = () => {
 
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 rounded-xl border border-teal-200/40 bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/20">
+                className="inline-flex items-center gap-2 rounded-xl border border-teal-200/40 bg-white/10 px-3 py-2 text-sm font-medium !text-white transition hover:bg-white/20">
                 <i className="bi bi-house-door" />
                 Back to Website
               </Link>

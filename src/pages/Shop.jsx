@@ -116,6 +116,9 @@ export default function Shop() {
           border-radius:18px; border:1.5px solid #e5e7eb;
           background:#fff; overflow:hidden;
           transition:transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
         .prod-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,.11); }
         .prod-card img { transition:transform .5s ease; }
@@ -145,7 +148,7 @@ export default function Shop() {
               <p className="shop-hero-badge inline-flex uppercase tracking-[0.14em] text-xs text-white mb-3 font-bold bg-white/15 border border-white/30 rounded-full px-3 py-1">
                 PETZONE Shop
               </p>
-              <h1 className="shop-hero-title text-3xl md:text-4xl lg:text-5xl font-black mb-4 text-white leading-tight">
+              <h1 className="shop-hero-title text-2xl md:text-4xl font-black mb-4 text-white leading-tight">
                 Shop Smarter With Fast Filters
               </h1>
               <p className="shop-hero-text text-slate-100 text-base md:text-lg max-w-2xl">
@@ -344,7 +347,7 @@ export default function Shop() {
                       )}
                     </div>
 
-                    <div style={{ padding: "14px 14px 16px" }}>
+                    <div style={{ padding: "14px 14px 16px", display: "flex", flexDirection: "column", flex: 1 }}>
                       <h3 style={{
                         margin: "0 0 3px", fontSize: ".875rem", fontWeight: 700, color: "#111827",
                         overflow: "hidden", display: "-webkit-box",
@@ -362,7 +365,7 @@ export default function Shop() {
                       }}>
                         {item.description || item.content}
                       </p>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
                         <span className="syne" style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827" }}>
                           ${Number(item.price).toFixed(2)}
                         </span>

@@ -137,8 +137,12 @@ export const updateUserProfile = async (profileData) => {
     const payload = {
       name: profileData.name,
       email: profileData.email,
-      password: profileData.password,
       avatar: profileData.avatar,
+      company_name: profileData.company_name,
+      location: profileData.location,
+      phone: profileData.phone,
+      // Only include password if provided
+      ...(profileData.password ? { password: profileData.password } : {}),
     };
 
     console.log("📤 Updating user profile to:", `${API_BASE_URL}/profile`);
@@ -459,6 +463,28 @@ export const fetchPublicProducts = async () => {
   }
 };
 
+export const fetchAllUsers = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    // API returns { users: [...] }
+    return Array.isArray(data) ? data : (data.users || data.data || []);
+  } catch (error) {
+    console.error("❌ Fetch all users error:", error);
+    throw error;
+  }
+};
+
 export const fetchUserById = async (id) => {
   try {
     const token = localStorage.getItem("tokenPet");
@@ -555,6 +581,24 @@ export const resetPassword = async (email, token, password) => {
   }
 };
 
+export const directResetPassword = async (email, password) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/direct-reset-password`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Direct reset password error:", error);
+    throw error;
+  }
+};
+
 export const addPetCategory = async (name) => {
   try {
     const response = await fetch(`${API_BASE_URL}/petCategories`, {
@@ -596,8 +640,8 @@ export const addProductType = async (name) => {
 export const updatePetCategory = async (id, name) => {
   try {
     const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/petCategories/${id}`, {
-      method: "PUT",
+    const response = await fetch(`${API_BASE_URL}/petCategories/update/${id}`, {
+      method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
@@ -617,8 +661,8 @@ export const updatePetCategory = async (id, name) => {
 export const deletePetCategory = async (id) => {
   try {
     const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/petCategories/${id}`, {
-      method: "DELETE",
+    const response = await fetch(`${API_BASE_URL}/petCategories/delete/${id}`, {
+      method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
@@ -637,8 +681,8 @@ export const deletePetCategory = async (id) => {
 export const updateProductType = async (id, name) => {
   try {
     const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/productTypes/${id}`, {
-      method: "PUT",
+    const response = await fetch(`${API_BASE_URL}/productTypes/update/${id}`, {
+      method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
@@ -658,8 +702,8 @@ export const updateProductType = async (id, name) => {
 export const deleteProductType = async (id) => {
   try {
     const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/productTypes/${id}`, {
-      method: "DELETE",
+    const response = await fetch(`${API_BASE_URL}/productTypes/delete/${id}`, {
+      method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
@@ -717,22 +761,3 @@ export const purchaseProduct = async (product_name, quantity, total_price = 0) =
   }
 };
 
-export const fetchPurchaseHistory = async () => {
-  try {
-    const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/purchase`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.error("❌ Fetch purchase history error:", error);
-    throw error;
-  }
-};
