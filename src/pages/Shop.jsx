@@ -89,8 +89,13 @@ export default function Shop() {
     setSearchParams(next);
   };
 
-  const handleBuy = (item) => {
+  const handleBuy = (e, item) => {
+    e.stopPropagation();
     navigate(`/checkout?itemId=${item.id}`, { state: { item } });
+  };
+
+  const handleProductClick = (item) => {
+    navigate(`/product/${item.id}`);
   };
 
   const handleCategorySelect = (category) => {
@@ -277,7 +282,8 @@ export default function Shop() {
                 {filteredItems.map((item) => (
                   <article
                     key={item.id}
-                    className="prod-card"
+                    className="prod-card cursor-pointer"
+                    onClick={() => handleProductClick(item)}
                   >
                     <div style={{ position: "relative", height: 188, overflow: "hidden" }}>
                       <img
@@ -336,7 +342,7 @@ export default function Shop() {
                         <span className="syne" style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827" }}>
                           ${Number(item.price).toFixed(2)}
                         </span>
-                        <button className="cart-btn" onClick={() => handleBuy(item)}>
+                        <button className="cart-btn" onClick={(e) => handleBuy(e, item)}>
                           <i className="bi bi-cart-plus" style={{ marginRight: 5 }} />
                           Buy Now
                         </button>

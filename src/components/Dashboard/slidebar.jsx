@@ -90,6 +90,13 @@ const Sidebar = () => {
           Insert Store
         </Link>
 
+        <Link
+          to="/DashboardView/categories"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
+          <i className="bi bi-tags-fill text-lg" />
+          Manage Categories
+        </Link>
+
         <button
           onClick={logout}
           className="mt-6 flex w-full items-center gap-3 rounded-xl bg-rose-500 px-3 py-2.5 text-left text-white transition hover:bg-rose-600">

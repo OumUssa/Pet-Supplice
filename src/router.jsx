@@ -11,7 +11,9 @@ import UpdateStore from "./components/Dashboard/UpdateStore";
 import Profile from "./components/Dashboard/Profile";
 import AboutUs from "./components/Dashboard/AboutUs";
 import Contact from "./components/Dashboard/contact";
+import CategoryManager from "./components/Dashboard/CategoryManager";
 import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
 
@@ -39,6 +41,10 @@ export const router = createBrowserRouter([
   {
     path: "/shop",
     element: <Shop />,
+  },
+  {
+    path: "/product/:id",
+    element: <ProductDetail />,
   },
   {
     path: "/checkout",
@@ -75,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "categories",
+        element: <CategoryManager />,
       },
     ],
   },

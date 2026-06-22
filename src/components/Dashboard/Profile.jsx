@@ -21,6 +21,8 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   const initials = useMemo(() => {
     const name = profile.name.trim();
@@ -81,6 +83,19 @@ const Profile = () => {
           role_id: userData.role_id,
           id: userData.id,
         });
+
+        // Fetch user's orders
+        setOrdersLoading(true);
+        try {
+          // Import fetchPurchaseHistory at the top or use it directly
+          const { fetchPurchaseHistory } = await import("../../API/api");
+          const userOrders = await fetchPurchaseHistory();
+          setOrders(Array.isArray(userOrders) ? userOrders : []);
+        } catch (err) {
+          console.warn("Could not load orders:", err);
+        } finally {
+          setOrdersLoading(false);
+        }
       } catch (error) {
         showError("Failed to load profile. " + error.message);
         setProfile(emptyProfile);
@@ -93,38 +108,15 @@ const Profile = () => {
     loadProfile();
   }, [showError]);
 
+  const isAdmin = profile.role_id === 2 || (profile.email || "").toLowerCase() === "admin@petstore.com";
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAvatarChange = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      showError("Please choose an image file.");
-      event.target.value = "";
-      return;
-    }
-
-    setAvatarLoading(true);
-    try {
-      const avatarDataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ""));
-        reader.onerror = () => reject(new Error("Failed to read image file"));
-        reader.readAsDataURL(file);
-      });
-
-      setProfile((prev) => ({ ...prev, avatar: avatarDataUrl }));
-      showSuccess("Avatar updated locally. Save profile to keep it.");
-    } catch (error) {
-      showError("Could not load avatar image.");
-    } finally {
-      setAvatarLoading(false);
-      event.target.value = "";
-    }
+  const handleAvatarUrlChange = (event) => {
+    setProfile((prev) => ({ ...prev, avatar: event.target.value }));
   };
 
   const handleRemoveAvatar = () => {
@@ -351,61 +343,46 @@ const Profile = () => {
             >
               {/* Avatar + name */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.25rem" }}>
-                <div
-                  className="avatar-wrap"
-                  style={{ position: "relative", display: "inline-block" }}
-                >
+                {!isAdmin && (
                   <div
-                    style={{
-                      width: 96, height: 96,
-                      borderRadius: "28px",
-                      overflow: "hidden",
-                      background: "linear-gradient(135deg,#0d9488,#06b6d4)",
-                      display: "grid", placeItems: "center",
-                      fontSize: "1.75rem", fontWeight: 800, color: "#fff",
-                      boxShadow: "0 6px 20px rgba(13,148,136,.30)",
-                    }}
+                    className="avatar-wrap"
+                    style={{ position: "relative", display: "inline-block" }}
                   >
-                    {profile.avatar ? (
-                      <img src={profile.avatar} alt={profile.name || "Avatar"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      <span>{initials}</span>
-                    )}
+                    <div
+                      style={{
+                        width: 96, height: 96,
+                        borderRadius: "28px",
+                        overflow: "hidden",
+                        background: "linear-gradient(135deg,#0d9488,#06b6d4)",
+                        display: "grid", placeItems: "center",
+                        fontSize: "1.75rem", fontWeight: 800, color: "#fff",
+                        boxShadow: "0 6px 20px rgba(13,148,136,.30)",
+                      }}
+                    >
+                      {profile.avatar ? (
+                        <img src={profile.avatar} alt={profile.name || "Avatar"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span>{initials}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="avatar-pulse" style={{ position: "absolute", inset: "-5px", borderRadius: "32px", border: "2px solid rgba(13,148,136,.35)", opacity: 0, transition: "opacity .25s" }} />
-
-                  {/* camera badge */}
-                  <label
-                    style={{
-                      position: "absolute", bottom: -6, right: -6,
-                      width: 30, height: 30, borderRadius: "50%",
-                      background: "#fff", border: "1.5px solid #e0f2fe",
-                      display: "grid", placeItems: "center",
-                      cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,.1)",
-                      transition: "background .15s",
-                    }}
-                    title="Change avatar"
-                  >
-                    <i className={`bi ${avatarLoading ? "bi-hourglass-split" : "bi-camera-fill"}`} style={{ color: "#0d9488", fontSize: ".8rem" }} />
-                    <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
-                  </label>
-                </div>
+                )}
 
                 <div style={{ textAlign: "center" }}>
                   <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>
                     {profile.name || "User"}
                   </h2>
                   <p style={{ margin: "2px 0 0", fontSize: ".8125rem", color: "#64748b" }}>{profile.email}</p>
-                  {profile.role_id && (
+                  {isAdmin && (
                     <span
                       style={{
                         display: "inline-block", marginTop: 6,
-                        fontSize: ".75rem", fontWeight: 700, color: "#0d9488",
-                        background: "#f0fdfa", border: "1px solid #99f6e4",
+                        fontSize: ".75rem", fontWeight: 700, color: "#e11d48",
+                        background: "#fff1f2", border: "1px solid #fecdd3",
                         borderRadius: "99px", padding: "2px 10px",
                       }}
                     >
-                      Role #{profile.role_id}
+                      Administrator
                     </span>
                   )}
                 </div>
@@ -425,18 +402,6 @@ const Profile = () => {
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</span>
                   </div>
                 ))}
-              </div>
-
-              {/* Avatar actions */}
-              <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
-                <button className="btn-ghost" onClick={handleRemoveAvatar}>
-                  <i className="bi bi-trash3" /> Remove
-                </button>
-                <label className="btn-ghost" style={{ cursor: "pointer" }}>
-                  <i className={`bi ${avatarLoading ? "bi-hourglass-split" : "bi-upload"}`} />
-                  {avatarLoading ? "Loading…" : "Upload"}
-                  <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
-                </label>
               </div>
             </div>
 
@@ -483,6 +448,21 @@ const Profile = () => {
                   <input className="profile-input" type="text" name="company_name" value={profile.company_name} onChange={handleChange} placeholder="Your company" />
                 </div>
               </div>
+
+              {/* Add avatar URL and hide if admin */}
+              {!isAdmin && (
+                <div>
+                  <label style={{ display: "block", fontSize: ".8125rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
+                    Avatar Image URL
+                  </label>
+                  <input className="profile-input" type="text" value={profile.avatar} onChange={handleAvatarUrlChange} placeholder="https://example.com/avatar.jpg" />
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button type="button" className="btn-ghost" onClick={handleRemoveAvatar} style={{ padding: "6px 12px", fontSize: "12px" }}>
+                      Clear Avatar
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Row 3: location + password */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
@@ -652,6 +632,65 @@ const Profile = () => {
             </div>
           ))}
         </div>
+
+        {/* ── PURCHASE HISTORY ─────────────────────────────────────────── */}
+        {!isAdmin && (
+          <div style={{
+            borderRadius: "1.5rem",
+            border: "1px solid #e0f2fe",
+            background: "#fff",
+            padding: "2rem",
+            boxShadow: "0 1px 3px rgba(0,0,0,.05)",
+            marginTop: "1rem"
+          }}>
+            <h3 style={{ margin: "0 0 1.5rem", fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>
+              My Orders & Purchase History
+            </h3>
+
+            {ordersLoading ? (
+              <p style={{ color: "#64748b", fontSize: ".875rem" }}>Loading orders...</p>
+            ) : orders.length === 0 ? (
+              <div style={{ padding: "2rem", textAlign: "center", background: "#f8fafc", borderRadius: "1rem", border: "1px dashed #cbd5e1" }}>
+                <i className="bi bi-box-seam" style={{ fontSize: "2rem", color: "#94a3b8" }} />
+                <p style={{ margin: "10px 0 0", color: "#475569", fontWeight: 500 }}>No orders found.</p>
+                <Link to="/shop" style={{ display: "inline-block", marginTop: 10, color: "#0d9488", fontWeight: 600, textDecoration: "none" }}>Go to Shop</Link>
+              </div>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+                      <th style={{ padding: "12px 16px", textAlign: "left", fontSize: ".75rem", color: "#64748b", textTransform: "uppercase" }}>Order ID</th>
+                      <th style={{ padding: "12px 16px", textAlign: "left", fontSize: ".75rem", color: "#64748b", textTransform: "uppercase" }}>Product</th>
+                      <th style={{ padding: "12px 16px", textAlign: "center", fontSize: ".75rem", color: "#64748b", textTransform: "uppercase" }}>Quantity</th>
+                      <th style={{ padding: "12px 16px", textAlign: "right", fontSize: ".75rem", color: "#64748b", textTransform: "uppercase" }}>Total Price</th>
+                      <th style={{ padding: "12px 16px", textAlign: "right", fontSize: ".75rem", color: "#64748b", textTransform: "uppercase" }}>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                        <td style={{ padding: "16px", fontSize: ".875rem", fontWeight: 600, color: "#0f172a" }}>#{order.id}</td>
+                        <td style={{ padding: "16px", fontSize: ".875rem", color: "#475569" }}>
+                          {order.product?.title || order.product_id}
+                        </td>
+                        <td style={{ padding: "16px", fontSize: ".875rem", color: "#475569", textAlign: "center" }}>
+                          {order.quantity}
+                        </td>
+                        <td style={{ padding: "16px", fontSize: ".875rem", fontWeight: 700, color: "#0d9488", textAlign: "right" }}>
+                          ${Number(order.total_price).toFixed(2)}
+                        </td>
+                        <td style={{ padding: "16px", fontSize: ".875rem", color: "#64748b", textAlign: "right" }}>
+                          {new Date(order.created_at || Date.now()).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
