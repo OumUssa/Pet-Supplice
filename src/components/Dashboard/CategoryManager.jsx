@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType, fetchUserProfile } from "../../API/api";
+import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType, fetchUserProfile, updatePetCategory, updateProductType } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
 const CategoryManager = () => {
@@ -75,6 +75,32 @@ const CategoryManager = () => {
     }
   };
 
+  const handleEditCategory = async (cat) => {
+    const newName = window.prompt("Enter new pet category name:", cat.name);
+    if (!newName || newName.trim() === "" || newName === cat.name) return;
+    
+    try {
+      await updatePetCategory(cat.id, newName.trim());
+      showSuccess("Category updated successfully!");
+      loadData();
+    } catch (err) {
+      showError("Failed to update category.");
+    }
+  };
+
+  const handleEditType = async (type) => {
+    const newName = window.prompt("Enter new product type name:", type.name);
+    if (!newName || newName.trim() === "" || newName === type.name) return;
+    
+    try {
+      await updateProductType(type.id, newName.trim());
+      showSuccess("Product type updated successfully!");
+      loadData();
+    } catch (err) {
+      showError("Failed to update product type.");
+    }
+  };
+
   if (loading) {
     return <div className="p-8 text-center text-slate-500">Loading management data...</div>;
   }
@@ -119,9 +145,18 @@ const CategoryManager = () => {
 
           <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
             {categories.map((cat, i) => (
-              <div key={i} className="px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center">
+              <div key={i} className="px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center group">
                 <span className="font-medium text-slate-700">{cat.name}</span>
-                <span className="text-xs text-slate-400">ID: {cat.id}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400">ID: {cat.id}</span>
+                  <button 
+                    onClick={() => handleEditCategory(cat)}
+                    className="text-slate-400 hover:text-teal-600 transition p-1"
+                    title="Edit Category"
+                  >
+                    <i className="bi bi-pencil-square" />
+                  </button>
+                </div>
               </div>
             ))}
             {categories.length === 0 && <p className="text-slate-500 text-sm">No categories found.</p>}
@@ -150,9 +185,18 @@ const CategoryManager = () => {
 
           <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
             {types.map((type, i) => (
-              <div key={i} className="px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center">
+              <div key={i} className="px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center group">
                 <span className="font-medium text-slate-700">{type.name}</span>
-                <span className="text-xs text-slate-400">ID: {type.id}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400">ID: {type.id}</span>
+                  <button 
+                    onClick={() => handleEditType(type)}
+                    className="text-slate-400 hover:text-teal-600 transition p-1"
+                    title="Edit Product Type"
+                  >
+                    <i className="bi bi-pencil-square" />
+                  </button>
+                </div>
               </div>
             ))}
             {types.length === 0 && <p className="text-slate-500 text-sm">No product types found.</p>}

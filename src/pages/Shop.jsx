@@ -318,6 +318,30 @@ export default function Shop() {
                       }}>
                         <i className="bi bi-heart" style={{ fontSize: ".8rem", color: "#6b7280" }} />
                       </button>
+                      {/* Creator Info Overlay */}
+                      {item.creator_id && (
+                        <div
+                          className="absolute top-3 left-3 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-2 py-1.5 rounded-full shadow-sm hover:bg-white transition"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/user/${item.creator_id}`);
+                          }}
+                        >
+                          {item.creator_avatar ? (
+                            <img src={item.creator_avatar} alt={item.creator_name} className="w-6 h-6 rounded-full object-cover border border-slate-200" />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-[10px] font-bold">
+                              {item.creator_name?.charAt(0)?.toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex flex-col pr-1">
+                            <span className="text-[10px] font-bold text-slate-800 leading-none mb-0.5">{item.creator_name}</span>
+                            <span className="text-[9px] text-slate-500 leading-none">
+                              {new Date(item.created_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div style={{ padding: "14px 14px 16px" }}>

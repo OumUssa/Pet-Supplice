@@ -98,6 +98,29 @@ const ProductDetail = () => {
               <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
                 {product.title}
               </h1>
+              
+              {/* Creator Info */}
+              {product.creator_id && (
+                <div 
+                  className="flex items-center gap-2 mt-3 mb-4 p-2.5 rounded-xl border border-slate-100 bg-slate-50 w-fit cursor-pointer hover:bg-slate-100 transition"
+                  onClick={() => navigate(`/user/${product.creator_id}`)}
+                >
+                  {product.creator_avatar ? (
+                    <img src={product.creator_avatar} alt={product.creator_name} className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-xs font-bold">
+                      {product.creator_name?.charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-xs font-bold text-slate-800 leading-none mb-1">Created by {product.creator_name}</p>
+                    <p className="text-[10px] text-slate-500 leading-none">
+                      {new Date(product.created_at || Date.now()).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <p className="text-2xl font-bold text-emerald-600 syne">
                 ${Number(product.price).toFixed(2)}
               </p>

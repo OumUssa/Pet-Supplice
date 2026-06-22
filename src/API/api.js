@@ -444,6 +444,10 @@ export const fetchPublicProducts = async () => {
       price: Number(product.price) || 0,
       description: product.description,
       content: product.description,
+      created_at: product.created_at,
+      creator_name: product.user?.name || "Unknown",
+      creator_avatar: product.user?.avatar || "",
+      creator_id: product.user?.id || null,
     }));
 
     console.log("✅ Public products fetched successfully:", mappedProducts);
@@ -528,6 +532,48 @@ export const addProductType = async (name) => {
     return await response.json();
   } catch (error) {
     console.error("❌ Add product type error:", error);
+    throw error;
+  }
+};
+
+export const updatePetCategory = async (id, name) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/petCategories/${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Update pet category error:", error);
+    throw error;
+  }
+};
+
+export const updateProductType = async (id, name) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/productTypes/${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Update product type error:", error);
     throw error;
   }
 };
