@@ -99,7 +99,7 @@ export default function LoginForm() {
     <div className="site-shell min-h-screen px-4 py-6 md:py-10 flex items-center">
       <main className="max-w-5xl mx-auto w-full">
         <section className="grid lg:grid-cols-[1.1fr_0.9fr] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(2,132,199,0.14)]">
-          <div className="relative p-8 md:p-11 bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900 flex flex-col text-white">
+          <div className="relative p-8 md:p-11 bg-gradient-to-br from-emerald-400 via-emerald-600 to-slate-900 flex flex-col text-white">
             <div className="mb-30 relative">
               <img
                 src="/image/logo.png"
@@ -107,7 +107,7 @@ export default function LoginForm() {
                 className="h-45 object-contain absolute -top-10 -left-15"
               />
             </div>
-            <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
+            <div className="absolute top-6 right-6 rounded-full border border-emerald-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-emerald-700 uppercase">
               Sign In
             </div>
             <h1 className="text-2xl md:text-2xl font-black leading-tight text-white drop-shadow-sm">
@@ -154,7 +154,7 @@ export default function LoginForm() {
                   type="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
                   placeholder="Enter your email"
                 />
                 {error.email && (
@@ -171,7 +171,7 @@ export default function LoginForm() {
                   type="password"
                   value={form.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
                   placeholder="Enter your password"
                 />
                 {error.password && (
@@ -190,12 +190,12 @@ export default function LoginForm() {
 
             <div className="mt-5 flex items-center justify-between text-sm">
               <button
-                className="text-cyan-700 hover:underline"
+                className="text-emerald-700 hover:underline"
                 onClick={() => setShowForgotModal(true)}>
                 Forgot Password?
               </button>
               <button
-                className="text-cyan-700 hover:underline"
+                className="text-emerald-700 hover:underline"
                 onClick={() => navigate("/register")}>
                 Create Account
               </button>
@@ -207,14 +207,14 @@ export default function LoginForm() {
       {/* Forgot Password Modal */}
       {showForgotModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-sm flex items-center justify-center text-slate-700 px-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm border border-teal-100 shadow-2xl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm border border-emerald-100 shadow-2xl">
             <h3 className="text-xl font-black mb-4">Verify Email</h3>
             <input
               type="email"
               value={forgotEmail}
               onChange={(e) => setForgotEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-xl mb-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-xl mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             {forgotError && (
               <div className="text-red-500 mb-2">{forgotError}</div>

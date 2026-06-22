@@ -8,7 +8,7 @@ const Header = () => {
     `text-gray-700 navbar-link font-extrabold block px-5 py-3 transition-all duration-200 ${
       isActive
         ? "hvr-underline-from-left navbar-link-active"
-        : "hvr-underline-from-left hover:text-cyan-600"
+        : "hvr-underline-from-left hover:text-emerald-600"
     }`;
 
   const submitSearch = () => {
@@ -29,7 +29,7 @@ const Header = () => {
   };
 
   return (
-    <header className="relative z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-cyan-100">
+    <header className="relative z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-emerald-100">
       <div className="w-full flex items-center justify-between py-4 px-20">
         {/* Logo */}
         <div className="flex items-center justify-center h-24 w-24 ">
@@ -65,19 +65,18 @@ const Header = () => {
           </div>
 
           {/* User Links */}
-          <div className="flex items-center space-x-4 text-cyan-700">
+          <div className="flex items-center space-x-4 text-emerald-700">
             {!pettoken ? (
-              <div>
+              <div className="flex items-center space-x-2 whitespace-nowrap">
                 <Link
                   to="/signin"
-                  className="text-base btn hvr-underline-from-left py-1">
+                  className="px-4 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-100">
                   Login
                 </Link>
-                <span className="mx-3">/</span>
                 <Link
                   to="/register"
-                  className="hvr-underline-from-left btn py-1">
-                  register
+                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm">
+                  Register
                 </Link>
               </div>
             ) : (

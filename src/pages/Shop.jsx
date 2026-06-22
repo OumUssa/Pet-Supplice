@@ -105,6 +105,26 @@ export default function Shop() {
 
   return (
     <div className="site-shell flex flex-col">
+      <style>{`
+        /* ── PRODUCT CARD ── */
+        .prod-card {
+          border-radius:18px; border:1.5px solid #e5e7eb;
+          background:#fff; overflow:hidden;
+          transition:transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s;
+        }
+        .prod-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,.11); }
+        .prod-card img { transition:transform .5s ease; }
+        .prod-card:hover img { transform:scale(1.06); }
+        
+        /* ── CART btn ── */
+        .cart-btn {
+          border-radius:9px; padding:7px 14px;
+          font-size:.78rem; font-weight:700; font-family:inherit;
+          background:#0ea186; color:#fff; border:none; cursor:pointer;
+          transition:background .18s,transform .15s;
+        }
+        .cart-btn:hover { background:#0a8c74; transform:translateY(-1px); }
+      `}</style>
       <Header />
 
       <main className="flex-1 max-w-8xl w-full mx-auto px-4 md:px-6 py-8 md:py-12">
@@ -177,7 +197,7 @@ export default function Shop() {
           <aside className="hidden md:block">
             <div className="shop-filter-sidebar rounded-2xl border border-slate-200 bg-white p-5 sticky top-24">
               <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-200">
-                <i className="bi bi-funnel text-cyan-700"></i>
+                <i className="bi bi-funnel text-emerald-600"></i>
                 <h2 className="text-2xl font-black text-slate-900">Filters</h2>
               </div>
 
@@ -220,7 +240,7 @@ export default function Shop() {
               <button
                 type="button"
                 onClick={() => updateFilter("All", "All")}
-                className="w-full rounded-lg bg-cyan-700 text-white font-semibold py-2.5 hover:bg-cyan-800 transition">
+                className="w-full rounded-lg bg-emerald-600 text-white font-semibold py-2.5 hover:bg-emerald-700 transition">
                 Clear Filters
               </button>
             </div>
@@ -257,42 +277,68 @@ export default function Shop() {
                 {filteredItems.map((item) => (
                   <article
                     key={item.id}
-                    className="group shop-product-card rounded-2xl border border-slate-200 overflow-hidden bg-white transition duration-300">
-                    <div className="relative h-44 overflow-hidden shop-product-card__media">
+                    className="prod-card"
+                  >
+                    <div style={{ position: "relative", height: 188, overflow: "hidden" }}>
                       <img
-                        src={item.image}
+                        src={item.image || item.image_url}
                         alt={item.title}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                       />
-                      <button
-                        type="button"
-                        aria-label="Add to wishlist"
-                        className="absolute right-2 top-2 h-6 w-6 rounded-full bg-white/85 text-slate-500 grid place-items-center shop-product-card__fav">
-                        <i className="bi bi-heart"></i>
-                      </button>
-                      <span className="absolute left-2.5 bottom-2.5 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600 border border-slate-200">
+                      {/* Overlay gradient */}
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        background: "linear-gradient(to top,rgba(0,0,0,.35) 0%,transparent 55%)",
+                      }} />
+                      {/* Category badge */}
+                      <span style={{
+                        position: "absolute", left: 10, bottom: 10,
+                        fontSize: ".68rem", fontWeight: 800, letterSpacing: ".06em",
+                        textTransform: "uppercase",
+                        background: "rgba(255,255,255,.92)", color: "#374151",
+                        borderRadius: 7, padding: "3px 9px",
+                        border: "1px solid rgba(255,255,255,.6)",
+                      }}>
                         {item.category}
                       </span>
+                      {/* Wishlist */}
+                      <button style={{
+                        position: "absolute", right: 10, top: 10,
+                        width: 30, height: 30, borderRadius: "50%",
+                        background: "rgba(255,255,255,.88)",
+                        border: "none", cursor: "pointer",
+                        display: "grid", placeItems: "center",
+                        transition: "background .15s",
+                      }}>
+                        <i className="bi bi-heart" style={{ fontSize: ".8rem", color: "#6b7280" }} />
+                      </button>
                     </div>
 
-                    <div className="p-3.5">
-                      <h3 className="font-bold text-sm line-clamp-1 text-slate-900">
+                    <div style={{ padding: "14px 14px 16px" }}>
+                      <h3 style={{
+                        margin: "0 0 3px", fontSize: ".875rem", fontWeight: 700, color: "#111827",
+                        overflow: "hidden", display: "-webkit-box",
+                        WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
+                      }}>
                         {item.title}
                       </h3>
-                      <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-[0.12em]">
+                      <p style={{ margin: "0 0 6px", fontSize: ".68rem", fontWeight: 700, color: "#9ca3af", letterSpacing: ".1em", textTransform: "uppercase" }}>
                         {item.Type || "Pet Supply"}
                       </p>
-                      <p className="text-xs text-slate-600 mt-1.5 h-8 overflow-hidden line-clamp-2 leading-relaxed">
-                        {item.content}
+                      <p style={{
+                        margin: "0 0 12px", fontSize: ".78rem", color: "#6b7280", lineHeight: 1.55,
+                        overflow: "hidden", display: "-webkit-box",
+                        WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                      }}>
+                        {item.description || item.content}
                       </p>
-                      <div className="mt-3 flex items-center justify-between gap-2">
-                        <p className="text-base font-black text-slate-900">
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <span className="syne" style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827" }}>
                           ${Number(item.price).toFixed(2)}
-                        </p>
-                        <button
-                          onClick={() => handleBuy(item)}
-                          className="shop-add-cart-btn rounded-md bg-slate-700 px-2 py-2 leading-none font-semibold text-white hover:bg-slate-800 transition whitespace-nowrap">
-                          Add to cart
+                        </span>
+                        <button className="cart-btn" onClick={() => handleBuy(item)}>
+                          <i className="bi bi-cart-plus" style={{ marginRight: 5 }} />
+                          Buy Now
                         </button>
                       </div>
                     </div>

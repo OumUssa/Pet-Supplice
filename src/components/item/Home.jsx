@@ -49,6 +49,7 @@ const categoryCards = [
   { name: "Bird",      desc: "Balanced feed, cages, and enrichment products.",         icon: "bi-feather",    color: "#10b981", bg: "#f0fdf4", border: "#a7f3d0", types: ["Food","Cages","Toys"] },
   { name: "Fish",      desc: "Aquarium kits, filters, and healthy food blends.",       icon: "bi-water",      color: "#6366f1", bg: "#eef2ff", border: "#c7d2fe", types: ["Food","Aquariums","Filters"] },
   { name: "Small Pet", desc: "Bedding, toys, tunnels, and habitat support.",           icon: "bi-stars",      color: "#ec4899", bg: "#fdf2f8", border: "#fbcfe8", types: ["Food","Cages","Bedding"] },
+  { name: "Reptile",   desc: "Terrariums, heating, and specialized diets for reptiles.", icon: "bi-brightness-high", color: "#8b5cf6", bg: "#f5f3ff", border: "#ddd6fe", types: ["Food","Heating","Habitats"] },
 ];
 
 const faqItems = [
@@ -301,10 +302,10 @@ const Home = () => {
         .cart-btn {
           border-radius:9px; padding:7px 14px;
           font-size:.78rem; font-weight:700; font-family:inherit;
-          background:#111827; color:#fff; border:none; cursor:pointer;
+          background:#0ea186; color:#fff; border:none; cursor:pointer;
           transition:background .18s,transform .15s;
         }
-        .cart-btn:hover { background:#1f2937; transform:translateY(-1px); }
+        .cart-btn:hover { background:#0a8c74; transform:translateY(-1px); }
 
         /* ── FAQ ── */
         .faq-wrap { max-width:780px; margin:0 auto; }
@@ -325,7 +326,6 @@ const Home = () => {
             effect="fade"
             autoplay={{ delay: 5000, disableOnInteraction: false }}
             pagination={{ clickable: true }}
-            navigation
             loop
             onSlideChange={(s) => setActiveSlide(s.realIndex)}
             style={{ borderRadius: 24 }}
@@ -393,7 +393,7 @@ const Home = () => {
                         <button
                           className="btn-primary"
                           onClick={handleShopNow}
-                          style={{ background: slide.accent, color: "#fff" }}
+                          style={{ background: "#F59E0B", color: "#fff" }}
                         >
                           <i className="bi bi-bag-fill" />
                           Shop Now
@@ -461,7 +461,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
             {categoryCards.map((item, idx) => (
               <div
                 key={item.name}
@@ -470,52 +470,28 @@ const Home = () => {
                 data-aos-delay={idx * 80}
                 onClick={() => handleOpenCategory(item.name)}
                 style={{
-                  width: "clamp(260px,calc(20% - 16px),280px)",
-                  borderColor: item.border,
                   background: "#fff",
+                  borderColor: "#f8fafc",
+                  padding: "36px 32px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  borderRadius: "20px",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.03)",
                 }}
               >
                 {/* Icon */}
                 <div style={{
-                  width: 44, height: 44, borderRadius: 13,
-                  background: item.bg, border: `1.5px solid ${item.border}`,
-                  display: "grid", placeItems: "center", marginBottom: 14,
+                  width: 52, height: 52, borderRadius: 14,
+                  background: "#f3f4f6", // very light gray-blue
+                  display: "grid", placeItems: "center", marginBottom: 24,
                 }}>
-                  <i className={`bi ${item.icon}`} style={{ fontSize: "1.15rem", color: item.color }} />
+                  <i className={`bi ${item.icon}`} style={{ fontSize: "1.4rem", color: "#6366f1" }} />
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <h3 className="syne" style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{item.name}</h3>
-                  <span style={{
-                    fontSize: ".7rem", fontWeight: 800, color: item.color,
-                    background: item.bg, border: `1px solid ${item.border}`,
-                    borderRadius: "99px", padding: "2px 10px",
-                  }}>
-                    {item.types.length} types
-                  </span>
-                </div>
+                <h3 className="syne" style={{ margin: "0 0 14px", fontSize: "1.2rem", fontWeight: 700, color: "#1e293b" }}>{item.name}</h3>
 
-                <p style={{ fontSize: ".8125rem", color: "#6b7280", lineHeight: 1.6, margin: "0 0 14px" }}>{item.desc}</p>
-
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
-                  {item.types.map((t) => (
-                    <span key={t} style={{
-                      fontSize: ".7rem", fontWeight: 700,
-                      background: item.bg, color: item.color,
-                      border: `1px solid ${item.border}`,
-                      borderRadius: "99px", padding: "3px 10px",
-                    }}>{t}</span>
-                  ))}
-                </div>
-
-                <div style={{
-                  paddingTop: 12, borderTop: "1px solid #f3f4f6",
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  fontSize: ".78rem", fontWeight: 700, color: item.color,
-                }}>
-                  <span>Shop {item.name}</span>
-                  <i className="bi bi-arrow-right" style={{ transition: "transform .2s" }} />
-                </div>
+                <p style={{ fontSize: ".9rem", color: "#64748b", lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -621,7 +597,7 @@ const Home = () => {
                         </span>
                         <button className="cart-btn" onClick={() => handleBuy(item)}>
                           <i className="bi bi-cart-plus" style={{ marginRight: 5 }} />
-                          Add
+                          Buy Now
                         </button>
                       </div>
                     </div>

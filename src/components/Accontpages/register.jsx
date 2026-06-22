@@ -91,7 +91,7 @@ export default function Signup() {
     <div className="site-shell min-h-screen px-4 py-6 md:py-10 flex items-center">
       <main className="max-w-5xl mx-auto w-full">
         <section className="grid lg:grid-cols-[0.92fr_1.08fr] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,118,110,0.13)]">
-          <div className="relative p-8 md:p-10 bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900 flex flex-col text-white">
+          <div className="relative p-8 md:p-10 bg-gradient-to-br from-emerald-400 via-emerald-600 to-slate-900 flex flex-col text-white">
             <div className="mb-30 relative">
               <img
                 src="/image/logo.png"
@@ -99,7 +99,7 @@ export default function Signup() {
                 className="h-45 object-contain absolute -top-10 -left-15"
               />
             </div>
-            <div className="absolute top-6 right-6 rounded-full border border-cyan-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-cyan-700 uppercase">
+            <div className="absolute top-6 right-6 rounded-full border border-emerald-300/60 bg-white/75 px-3 py-1 text-[11px] font-bold tracking-[0.14em] text-emerald-700 uppercase">
               Register
             </div>
             <h1 className="text-2xl md:text-2xl font-black leading-tight text-white drop-shadow-sm">
@@ -138,7 +138,7 @@ export default function Signup() {
                   name="username"
                   value={form.username}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="Enter username"
                 />
                 {error.username && (
@@ -157,7 +157,7 @@ export default function Signup() {
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="you@example.com"
                 />
                 {error.email && (
@@ -174,7 +174,7 @@ export default function Signup() {
                   name="password"
                   value={form.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="******"
                 />
                 {error.password && (

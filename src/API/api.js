@@ -91,10 +91,10 @@ export const loginUser = async (credentials) => {
 export const fetchUserProfile = async () => {
   try {
     const token = localStorage.getItem("tokenPet");
-    console.log("📤 Fetching user profile from:", `${API_BASE_URL}/user`);
+    console.log("📤 Fetching user profile from:", `${API_BASE_URL}/profile`);
     console.log("🔐 Token:", token ? "Present" : "Missing");
 
-    const response = await fetch(`${API_BASE_URL}/user`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       method: "GET",
       mode: "cors",
       headers: {
@@ -418,6 +418,20 @@ export const fetchPublicProducts = async () => {
       productsArray = data.products;
     }
 
+    let catMap = {};
+    let tMap = {};
+    try {
+      const categoriesData = await fetchPetCategories();
+      const categoriesArray = Array.isArray(categoriesData) ? categoriesData : categoriesData?.data || [];
+      categoriesArray.forEach(cat => { catMap[cat.id] = cat.name; });
+      
+      const typesData = await fetchProductTypes();
+      const typesArray = Array.isArray(typesData) ? typesData : typesData?.data || [];
+      typesArray.forEach(type => { tMap[type.id] = type.name; });
+    } catch (e) {
+      console.warn("Could not fetch categories/types for mapping", e);
+    }
+
     // Map to shop format
     const mappedProducts = productsArray.map((product) => ({
       id: product.id,
@@ -425,8 +439,8 @@ export const fetchPublicProducts = async () => {
       image: product.image_url,
       image_url: product.image_url,
       category:
-        product.pet_category_name || product.category || "Uncategorized",
-      Type: product.product_type_name || product.type || "Uncategorized",
+        product.pet_category_name || product.pet_category?.name || product.category?.name || product.category || catMap[product.pet_category_id] || "Uncategorized",
+      Type: product.product_type_name || product.product_type?.name || product.type?.name || product.type || tMap[product.type_product_id] || "Uncategorized",
       price: Number(product.price) || 0,
       description: product.description,
       content: product.description,
@@ -437,6 +451,145 @@ export const fetchPublicProducts = async () => {
   } catch (error) {
     console.error("❌ Fetch public products error:", error.message);
     console.error("Full error object:", error);
+    throw error;
+  }
+};
+
+export const fetchUserById = async (id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch user by id error:", error);
+    throw error;
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/logout`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    throw error;
+  }
+};
+
+export const addPetCategory = async (name) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/petCategories`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Add pet category error:", error);
+    throw error;
+  }
+};
+
+export const addProductType = async (name) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/productTypes`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Add product type error:", error);
+    throw error;
+  }
+};
+
+export const updateProduct = async (name, productData) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/products/${name}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(productData),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Update product error:", error);
+    throw error;
+  }
+};
+
+export const purchaseProduct = async (product_id, quantity) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/purchase`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ product_id, quantity }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Purchase product error:", error);
+    throw error;
+  }
+};
+
+export const fetchPurchaseHistory = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/purchase`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch purchase history error:", error);
     throw error;
   }
 };

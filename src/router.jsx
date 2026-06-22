@@ -18,11 +18,7 @@ import Admin from "./pages/Admin";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AuthGuard>
-        <App />
-      </AuthGuard>
-    ),
+    element: <App />,
   },
   {
     path: "/signin",
@@ -34,27 +30,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/about",
-    element: (
-      <AuthGuard>
-        <AboutUs />
-      </AuthGuard>
-    ),
+    element: <AboutUs />,
   },
   {
     path: "/contact",
-    element: (
-      <AuthGuard>
-        <Contact />
-      </AuthGuard>
-    ),
+    element: <Contact />,
   },
   {
     path: "/shop",
-    element: (
-      <AuthGuard>
-        <Shop />
-      </AuthGuard>
-    ),
+    element: <Shop />,
   },
   {
     path: "/checkout",
