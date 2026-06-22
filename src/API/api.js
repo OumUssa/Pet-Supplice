@@ -553,7 +553,7 @@ export const updateProduct = async (name, productData) => {
   }
 };
 
-export const purchaseProduct = async (product_id, quantity) => {
+export const purchaseProduct = async (product_name, quantity, total_price = 0) => {
   try {
     const token = localStorage.getItem("tokenPet");
     const response = await fetch(`${API_BASE_URL}/purchase`, {
@@ -564,7 +564,7 @@ export const purchaseProduct = async (product_id, quantity) => {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ product_id, quantity }),
+      body: JSON.stringify({ product_name, quantity, total_price }),
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();

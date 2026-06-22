@@ -53,7 +53,7 @@ export default function LoginForm() {
       });
 
       if (data) {
-        localStorage.setItem("tokenPet", data.id || data.token || form.email);
+        localStorage.setItem("tokenPet", data.token);
         showSuccess("Login successful!");
         navigate("/", { replace: true });
       } else {
