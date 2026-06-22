@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType } from "../../API/api";
+import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType, fetchUserProfile } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
 const CategoryManager = () => {
@@ -13,6 +13,7 @@ const CategoryManager = () => {
   const [newType, setNewType] = useState("");
   const [addingCat, setAddingCat] = useState(false);
   const [addingType, setAddingType] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -21,6 +22,14 @@ const CategoryManager = () => {
   const loadData = async () => {
     setLoading(true);
     try {
+      const user = await fetchUserProfile();
+      if (!user || (user.role_id !== 2 && (user.email || "").toLowerCase() !== "admin@petstore.com")) {
+        setIsSuperAdmin(false);
+        setLoading(false);
+        return;
+      }
+      setIsSuperAdmin(true);
+
       const [catData, typeData] = await Promise.all([
         fetchPetCategories(),
         fetchProductTypes()
@@ -68,6 +77,16 @@ const CategoryManager = () => {
 
   if (loading) {
     return <div className="p-8 text-center text-slate-500">Loading management data...</div>;
+  }
+
+  if (isSuperAdmin === false) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <i className="bi bi-shield-lock text-6xl text-rose-400 mb-4" />
+        <h2 className="text-2xl font-bold text-slate-800">Access Denied</h2>
+        <p className="text-slate-500 mt-2">Only Super Administrators can manage categories and types.</p>
+      </div>
+    );
   }
 
   return (

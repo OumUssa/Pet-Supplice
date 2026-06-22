@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { fetchUserProfile } from "../../API/api";
 
 const Sidebar = () => {
   const [petOpen, setPetOpen] = useState(false);
   const [activePet, setActivePet] = useState("");
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const navigate = useNavigate();
 
   const categoryItems = ["Dog", "Cat", "Bird", "Fish", "Small Pet"];
+
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const user = await fetchUserProfile();
+        if (user && (user.role_id === 2 || (user.email || "").toLowerCase() === "admin@petstore.com")) {
+          setIsSuperAdmin(true);
+        }
+      } catch (e) {
+        // silently fail
+      }
+    };
+    checkRole();
+  }, []);
 
   const handlePetClick = (pet) => {
     setActivePet(pet);
@@ -90,12 +106,23 @@ const Sidebar = () => {
           Insert Store
         </Link>
 
-        <Link
-          to="/DashboardView/categories"
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
-          <i className="bi bi-tags-fill text-lg" />
-          Manage Categories
-        </Link>
+        {isSuperAdmin && (
+          <>
+            <Link
+              to="/DashboardView/categories"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
+              <i className="bi bi-tags-fill text-lg" />
+              Manage Categories
+            </Link>
+            
+            <Link
+              to="/DashboardView/users"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-cyan-900 transition hover:bg-cyan-100">
+              <i className="bi bi-people-fill text-lg" />
+              User Management
+            </Link>
+          </>
+        )}
 
         <button
           onClick={logout}

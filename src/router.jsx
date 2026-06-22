@@ -86,14 +86,10 @@ export const router = createBrowserRouter([
         path: "categories",
         element: <CategoryManager />,
       },
+      {
+        path: "users",
+        element: <Admin />,
+      },
     ],
-  },
-  {
-    path: "/admin",
-    element: (
-      <AuthGuard>
-        <Admin />
-      </AuthGuard>
-    ),
   },
 ]);

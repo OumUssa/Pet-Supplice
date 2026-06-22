@@ -141,11 +141,11 @@ export const updateUserProfile = async (profileData) => {
       avatar: profileData.avatar,
     };
 
-    console.log("📤 Updating user profile to:", `${API_BASE_URL}/user`);
+    console.log("📤 Updating user profile to:", `${API_BASE_URL}/profile`);
     console.log("📋 Payload:", payload);
     console.log("🔐 Token:", token ? "Present" : "Missing");
 
-    const response = await fetch(`${API_BASE_URL}/user`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       method: "PUT",
       mode: "cors",
       headers: {
