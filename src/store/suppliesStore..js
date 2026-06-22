@@ -149,15 +149,16 @@ export async function updatePetSupply(
       description: content,
     };
 
+    const BASE = "https://petsupplice.cms-jubpet.linkpc.net/api";
     console.log(
       "📤 Updating product:",
-      `http://127.0.0.1:8000/api/products/${title}`,
+      `${BASE}/products/${title}`,
     );
     console.log("📋 Payload:", payload);
     console.log("🔐 Token:", token ? "Present" : "Missing");
 
     const response = await fetch(
-      `http://127.0.0.1:8000/api/products/${title}`,
+      `${BASE}/products/${title}`,
       {
         method: "PUT",
         mode: "cors",
