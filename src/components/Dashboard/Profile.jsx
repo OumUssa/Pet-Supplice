@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchUserProfile, updateUserProfile } from "../../API/api";
+import { fetchUserProfile, updateUserProfile, fetchPurchaseHistory } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
 const emptyProfile = {
@@ -87,8 +87,7 @@ const Profile = () => {
         // Fetch user's orders
         setOrdersLoading(true);
         try {
-          // Import fetchPurchaseHistory at the top or use it directly
-          const { fetchPurchaseHistory } = await import("../../API/api");
+          // Use fetchPurchaseHistory directly
           const userOrders = await fetchPurchaseHistory();
           setOrders(Array.isArray(userOrders) ? userOrders : []);
         } catch (err) {
