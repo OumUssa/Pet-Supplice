@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { registerUser } from "../../API/api";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../Base/BaseToast";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -66,8 +68,7 @@ export default function Signup() {
       });
 
       if (data) {
-        
-        setSuccess("User created successfully!");
+        showSuccess("Account created successfully! Please sign in.");
         setForm({ username: "", email: "", password: "" });
         // Optionally redirect after short delay
         setTimeout(() => navigate("/signin"), 1500);
@@ -80,6 +81,7 @@ export default function Signup() {
       }
     } catch (err) {
       console.error("❌ Registration failed:", err);
+      showError(err.message || "An error occurred. Try again.");
       setError((prev) => ({
         ...prev,
         email: err.message || "An error occurred. Try again.",
