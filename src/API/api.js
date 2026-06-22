@@ -479,13 +479,14 @@ export const fetchUserById = async (id) => {
   }
 };
 
-export const logoutUser = async () => {
+export const fetchPurchaseHistory = async () => {
   try {
     const token = localStorage.getItem("tokenPet");
-    const response = await fetch(`${API_BASE_URL}/logout`, {
+    const response = await fetch(`${API_BASE_URL}/purchase`, {
       method: "GET",
       mode: "cors",
       headers: {
+        "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
@@ -493,7 +494,63 @@ export const logoutUser = async () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
-    console.error("❌ Logout error:", error);
+    console.error("❌ Fetch purchase history error:", error);
+    throw error;
+  }
+};
+
+export const fetchAdminUserPurchases = async (userId) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/purchase`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch admin purchase history error:", error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/forgot-password`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Forgot password error:", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (email, token, password) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reset-password`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email, token, password }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Reset password error:", error);
     throw error;
   }
 };
@@ -557,6 +614,26 @@ export const updatePetCategory = async (id, name) => {
   }
 };
 
+export const deletePetCategory = async (id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/petCategories/${id}`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Delete pet category error:", error);
+    throw error;
+  }
+};
+
 export const updateProductType = async (id, name) => {
   try {
     const token = localStorage.getItem("tokenPet");
@@ -574,6 +651,26 @@ export const updateProductType = async (id, name) => {
     return await response.json();
   } catch (error) {
     console.error("❌ Update product type error:", error);
+    throw error;
+  }
+};
+
+export const deleteProductType = async (id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/productTypes/${id}`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Delete product type error:", error);
     throw error;
   }
 };

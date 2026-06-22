@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { userStore } from "../store/RegisterStore";
 import { useToast } from "../components/Base/BaseToast";
-import { fetchUserProfile } from "../API/api";
+import { fetchUserProfile, fetchAdminUserPurchases } from "../API/api";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const Admin = () => {
@@ -11,6 +11,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [userOrders, setUserOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   
   const [isSuperAdmin, setIsSuperAdmin] = useState(null);
   const loggedInUserId = localStorage.getItem("tokenPet");
@@ -121,6 +123,20 @@ const Admin = () => {
     } catch (error) {
       console.error(error);
       showError("Failed to delete user.");
+    }
+  };
+
+  const handleSelectUser = async (user) => {
+    setSelectedUser(user);
+    setOrdersLoading(true);
+    setUserOrders([]);
+    try {
+      const orders = await fetchAdminUserPurchases(user.id);
+      setUserOrders(orders || []);
+    } catch (err) {
+      console.warn("Failed to fetch user orders", err);
+    } finally {
+      setOrdersLoading(false);
     }
   };
 
@@ -281,7 +297,7 @@ const Admin = () => {
                       <div className="flex justify-center gap-2">
                         <button
                           type="button"
-                          onClick={() => setSelectedUser(user)}
+                          onClick={() => handleSelectUser(user)}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white transition"
                           title="View Details">
                           <i className="bi bi-eye-fill" />
@@ -354,6 +370,44 @@ const Admin = () => {
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Phone</span>
                 <span className="text-sm font-semibold text-slate-700">{selectedUser.phone || "-"}</span>
               </div>
+            </div>
+
+            {/* User Orders Table */}
+            <div className="mt-8 pt-6 border-t border-slate-100">
+              <h4 className="text-sm font-bold text-slate-800 mb-3">Order History</h4>
+              {ordersLoading ? (
+                <div className="text-center py-4">
+                  <i className="bi bi-arrow-repeat animate-spin text-teal-500 text-xl inline-block" />
+                  <p className="text-xs text-slate-500 mt-1">Loading orders...</p>
+                </div>
+              ) : userOrders.length === 0 ? (
+                <div className="text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  <p className="text-sm text-slate-500 font-medium">No orders found.</p>
+                </div>
+              ) : (
+                <div className="max-h-48 overflow-y-auto pr-2 rounded-xl border border-slate-100">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-slate-50 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-3 py-2 font-bold text-slate-500 text-xs uppercase tracking-wider">Product</th>
+                        <th className="px-3 py-2 font-bold text-slate-500 text-xs uppercase tracking-wider text-center">Qty</th>
+                        <th className="px-3 py-2 font-bold text-slate-500 text-xs uppercase tracking-wider text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {userOrders.map(order => (
+                        <tr key={order.id} className="hover:bg-slate-50">
+                          <td className="px-3 py-2 text-slate-700 truncate max-w-[120px]" title={order.product?.title || `ID: ${order.product_id}`}>
+                            {order.product?.title || `Product #${order.product_id}`}
+                          </td>
+                          <td className="px-3 py-2 text-slate-600 text-center font-medium">{order.quantity}</td>
+                          <td className="px-3 py-2 text-teal-600 font-bold text-right">${Number(order.total_price).toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

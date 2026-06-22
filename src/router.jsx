@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "./App"; // Home page
 import Register from "./components/Accontpages/register";
 import Signin from "./components/Accontpages/signin";
+import ForgotPassword from "./components/Accontpages/ForgotPassword";
+import ResetPassword from "./components/Accontpages/ResetPassword";
 import AuthGuard from "./store/Auth";
 import DashboardView from "./view/DashboardView";
 import ViewdetailDash from "./components/Dashboard/ViewDetailDash";
@@ -30,6 +32,14 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     path: "/about",

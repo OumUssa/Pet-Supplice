@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType, fetchUserProfile, updatePetCategory, updateProductType } from "../../API/api";
+import { fetchPetCategories, fetchProductTypes, addPetCategory, addProductType, fetchUserProfile, updatePetCategory, updateProductType, deletePetCategory, deleteProductType } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
 const CategoryManager = () => {
@@ -88,6 +88,17 @@ const CategoryManager = () => {
     }
   };
 
+  const handleDeleteCategory = async (cat) => {
+    if (!window.confirm(`Are you sure you want to permanently delete the category "${cat.name}"?`)) return;
+    try {
+      await deletePetCategory(cat.id);
+      showSuccess("Category deleted successfully!");
+      loadData();
+    } catch (err) {
+      showError("Failed to delete category.");
+    }
+  };
+
   const handleEditType = async (type) => {
     const newName = window.prompt("Enter new product type name:", type.name);
     if (!newName || newName.trim() === "" || newName === type.name) return;
@@ -98,6 +109,17 @@ const CategoryManager = () => {
       loadData();
     } catch (err) {
       showError("Failed to update product type.");
+    }
+  };
+
+  const handleDeleteType = async (type) => {
+    if (!window.confirm(`Are you sure you want to permanently delete the product type "${type.name}"?`)) return;
+    try {
+      await deleteProductType(type.id);
+      showSuccess("Product type deleted successfully!");
+      loadData();
+    } catch (err) {
+      showError("Failed to delete product type.");
     }
   };
 
@@ -156,6 +178,13 @@ const CategoryManager = () => {
                   >
                     <i className="bi bi-pencil-square" />
                   </button>
+                  <button 
+                    onClick={() => handleDeleteCategory(cat)}
+                    className="text-slate-400 hover:text-rose-600 transition p-1"
+                    title="Delete Category"
+                  >
+                    <i className="bi bi-trash3" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -195,6 +224,13 @@ const CategoryManager = () => {
                     title="Edit Product Type"
                   >
                     <i className="bi bi-pencil-square" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteType(type)}
+                    className="text-slate-400 hover:text-rose-600 transition p-1"
+                    title="Delete Product Type"
+                  >
+                    <i className="bi bi-trash3" />
                   </button>
                 </div>
               </div>

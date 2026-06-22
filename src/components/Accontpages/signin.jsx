@@ -166,14 +166,28 @@ export default function LoginForm() {
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Password
                 </label>
-                <input
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-                  placeholder="Enter your password"
-                />
+                <div className="relative">
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition"
+                  >
+                    {showPassword ? <i className="bi bi-eye-slash-fill"></i> : <i className="bi bi-eye-fill"></i>}
+                  </button>
+                </div>
+                <div className="flex justify-end mt-1">
+                  <Link to="/forgot-password" className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition">
+                    Forgot Password?
+                  </Link>
+                </div>
                 {error.password && (
                   <div className="text-red-500 mt-1 text-sm">
                     {error.password}

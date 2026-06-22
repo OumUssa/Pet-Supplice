@@ -5,6 +5,7 @@ import {
   createProduct,
   fetchPetCategories,
   fetchProductTypes,
+  fetchUserProfile,
 } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
@@ -39,14 +40,20 @@ const InsertStore = () => {
   const [categoryTypeMap, setCategoryTypeMap] = useState({});
   const [imgError, setImgError] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [categoriesData, typesData] = await Promise.all([
+        const [categoriesData, typesData, userData] = await Promise.all([
           fetchPetCategories(),
           fetchProductTypes(),
+          fetchUserProfile().catch(() => null),
         ]);
+        
+        if (userData) {
+          setCurrentUser(userData);
+        }
 
         let categoryNames = [];
         if (Array.isArray(categoriesData)) {
@@ -641,6 +648,23 @@ const InsertStore = () => {
                 }}>
                 Live Preview
               </p>
+
+              {/* Creator Info on Preview */}
+              {currentUser && (
+                <div className="flex items-center gap-2 mb-3">
+                  {currentUser.avatar ? (
+                    <img src={currentUser.avatar} alt={currentUser.name} className="w-6 h-6 rounded-full object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-[10px] font-bold">
+                      {currentUser.name?.charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-800 leading-none mb-0.5">{currentUser.name}</p>
+                    <p className="text-[8px] text-slate-500 leading-none">Just now</p>
+                  </div>
+                </div>
+              )}
 
               {/* Image */}
               <div
