@@ -32,7 +32,7 @@ const Admin = () => {
     const checkAccessAndLoad = async () => {
       try {
         const user = await fetchUserProfile();
-        if (user && (user.role_id === 2 || (user.email || "").toLowerCase() === "admin@petstore.com")) {
+        if (user && (user.role_id === 1 || (user.email || "").toLowerCase() === "admin@petstore.com")) {
           setIsSuperAdmin(true);
           loadUsers();
         } else {
@@ -65,7 +65,7 @@ const Admin = () => {
 
   const isAdminUser = (user) =>
     (user.role || "").toLowerCase() === "admin" ||
-    (user.role_id === 2) ||
+    (user.role_id === 1) ||
     (user.email || "").trim().toLowerCase() === "admin@petstore.com";
 
   // Chart Data

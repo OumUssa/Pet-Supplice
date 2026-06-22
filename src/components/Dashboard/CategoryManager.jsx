@@ -23,7 +23,7 @@ const CategoryManager = () => {
     setLoading(true);
     try {
       const user = await fetchUserProfile();
-      if (!user || (user.role_id !== 2 && (user.email || "").toLowerCase() !== "admin@petstore.com")) {
+      if (!user || (user.role_id !== 1 && (user.email || "").toLowerCase() !== "admin@petstore.com")) {
         setIsSuperAdmin(false);
         setLoading(false);
         return;
