@@ -70,8 +70,8 @@ const Sidebar = () => {
           <button
             onClick={() => setPetOpen(!petOpen)}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 !text-white/80 font-medium transition hover:bg-white/15 hover:!text-white">
-            <i className="bi bi-heart text-lg" />
-            Pets
+            <i className="bi bi-shop text-lg" />
+            Store
             <i
               className={`bi bi-chevron-down ml-auto transform transition-transform duration-300 ${
                 petOpen ? "rotate-180" : ""
@@ -98,13 +98,15 @@ const Sidebar = () => {
           </ul>
         </div>
 
-        <Link to="/DashboardView/insertStore" className={navLinkClass}>
-          <i className="bi bi-bag-plus-fill text-lg" />
-          Insert Store
-        </Link>
+
 
         {isSuperAdmin && (
           <>
+            <Link to="/DashboardView/insertStore" className={navLinkClass}>
+              <i className="bi bi-bag-plus-fill text-lg" />
+              Insert Store
+            </Link>
+
             <Link to="/DashboardView/categories" className={navLinkClass}>
               <i className="bi bi-tags-fill text-lg" />
               Manage Categories
@@ -113,6 +115,16 @@ const Sidebar = () => {
             <Link to="/DashboardView/users" className={navLinkClass}>
               <i className="bi bi-people-fill text-lg" />
               User Management
+            </Link>
+
+            <Link to="/DashboardView/orders" className={navLinkClass}>
+              <i className="bi bi-cart-check-fill text-lg" />
+              Order Status Tracking
+            </Link>
+
+            <Link to="/DashboardView/tickets" className={navLinkClass}>
+              <i className="bi bi-envelope-paper-fill text-lg" />
+              Support Tickets
             </Link>
           </>
         )}

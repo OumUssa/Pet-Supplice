@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { submitContact } from "../../API/api";
+import { useToast } from "../Base/BaseToast";
 import {
   Clock3,
   Mail,
@@ -16,6 +18,41 @@ const getDelayClass = (delay) =>
   delay > 0 ? `anim-delay-${String(delay)}` : "";
 
 const Contact = () => {
+  const { showSuccess, showError } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    topic: "Product Inquiry",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      showError("Please fill out all required fields.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await submitContact({
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        topic: formData.topic,
+        message: formData.message
+      });
+      showSuccess("Message sent successfully! We will get back to you soon.");
+      setFormData({ name: "", email: "", phone: "", topic: "Product Inquiry", message: "" });
+    } catch (error) {
+      console.error(error);
+      showError("Failed to send message. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -93,26 +130,32 @@ const Contact = () => {
                 Tell us what you need and we will guide you to the best options.
               </p>
 
-              <form className="grid md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Full Name
+                    Full Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="Enter your name"
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Email
+                    Email <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                     placeholder="you@example.com"
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
                   />
                 </div>
 
@@ -122,6 +165,8 @@ const Contact = () => {
                   </label>
                   <input
                     type="text"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     placeholder="+855 ..."
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
@@ -131,31 +176,44 @@ const Contact = () => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
                     Topic
                   </label>
-                  <select className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                    <option>Product Inquiry</option>
-                    <option>Order Support</option>
-                    <option>Delivery Information</option>
-                    <option>Partnership</option>
+                  <select 
+                    value={formData.topic}
+                    onChange={(e) => setFormData({...formData, topic: e.target.value})}
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    <option value="Product Inquiry">Product Inquiry</option>
+                    <option value="Order Support">Order Support</option>
+                    <option value="Delivery Information">Delivery Information</option>
+                    <option value="Partnership">Partnership</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Message
+                    Message <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     rows={5}
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
                     placeholder="Write your message..."
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
                   />
                 </div>
 
                 <div className="md:col-span-2 flex flex-wrap items-center gap-3 pt-2">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 rounded-xl btn-primary px-5 py-3 font-bold transition">
-                    <Send className="w-4 h-4" />
-                    Send Message
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-2 rounded-xl btn-primary px-5 py-3 font-bold transition disabled:opacity-70 disabled:cursor-not-allowed">
+                    {isSubmitting ? (
+                      <i className="bi bi-arrow-repeat animate-spin text-xl leading-none" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </button>
 
                   <Link

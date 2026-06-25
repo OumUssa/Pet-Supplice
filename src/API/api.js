@@ -761,3 +761,205 @@ export const purchaseProduct = async (product_name, quantity, total_price = 0) =
   }
 };
 
+// --- New Endpoints ---
+
+export const fetchAdminDashboard = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch admin dashboard error:", error);
+    throw error;
+  }
+};
+
+export const updateUserRole = async (id, role_id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/users/${id}/role`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ role_id }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Update user role error:", error);
+    throw error;
+  }
+};
+
+export const updatePurchaseStatus = async (id, status) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/purchase/${id}/status`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Update purchase status error:", error);
+    throw error;
+  }
+};
+
+export const submitContact = async (contactData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contacts`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(contactData),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Submit contact error:", error);
+    throw error;
+  }
+};
+
+export const fetchAllContacts = async () => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/contacts`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch all contacts error:", error);
+    throw error;
+  }
+};
+
+export const fetchContactById = async (id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/contacts/${id}`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch contact error:", error);
+    throw error;
+  }
+};
+
+export const replyContact = async (id, status) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/contacts/${id}/reply`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Reply contact error:", error);
+    throw error;
+  }
+};
+
+export const fetchProductComments = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${id}/comments`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Fetch product comments error:", error);
+    throw error;
+  }
+};
+
+export const addProductComment = async (id, comment, rating) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/products/${id}/comments`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ comment, rating }),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Add product comment error:", error);
+    throw error;
+  }
+};
+
+export const deleteComment = async (id) => {
+  try {
+    const token = localStorage.getItem("tokenPet");
+    const response = await fetch(`${API_BASE_URL}/comments/${id}`, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Delete comment error:", error);
+    throw error;
+  }
+};

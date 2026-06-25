@@ -19,6 +19,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
 import PublicProfile from './pages/PublicProfile';
+import AdminOrders from "./components/Dashboard/AdminOrders";
+import SupportTickets from "./components/Dashboard/SupportTickets";
 
 export const router = createBrowserRouter([
   {
@@ -104,6 +106,14 @@ export const router = createBrowserRouter([
       {
         path: "users",
         element: <Admin />,
+      },
+      {
+        path: "orders",
+        element: <AdminOrders />,
+      },
+      {
+        path: "tickets",
+        element: <SupportTickets />,
       },
     ],
   },

@@ -135,6 +135,18 @@ const InsertStore = () => {
   const parsedPrice = Number(price);
   const isValidImg = image && !imgError;
 
+  const isAdmin = currentUser && (currentUser.role_id === 1 || (currentUser.email || "").toLowerCase() === "admin@petstore.com");
+
+  if (currentUser && !isAdmin) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 0', textAlign: 'center' }}>
+        <i className="bi bi-shield-lock" style={{ fontSize: '4rem', color: '#fb7185', marginBottom: '1rem' }} />
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b' }}>Access Denied</h2>
+        <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Only Administrators can insert products.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <style>{`

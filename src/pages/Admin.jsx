@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { userStore } from "../store/RegisterStore";
 import { useToast } from "../components/Base/BaseToast";
-import { fetchUserProfile, fetchAdminUserPurchases, fetchAllUsers } from "../API/api";
+import { fetchUserProfile, fetchAdminUserPurchases, fetchAllUsers, updateUserRole } from "../API/api";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const Admin = () => {
@@ -137,6 +137,17 @@ const Admin = () => {
       console.warn("Failed to fetch user orders", err);
     } finally {
       setOrdersLoading(false);
+    }
+  };
+
+  const handleRoleChange = async (userId, newRoleId) => {
+    try {
+      await updateUserRole(userId, newRoleId);
+      showSuccess("User role updated successfully.");
+      loadUsers(); // Refresh the list
+    } catch (error) {
+      console.error(error);
+      showError("Failed to update user role.");
     }
   };
 
@@ -281,14 +292,19 @@ const Admin = () => {
                       {user.email}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold border ${
-                        isAdminUser(user)
-                          ? "bg-amber-50 text-amber-700 border-amber-200"
-                          : "bg-cyan-50 text-cyan-700 border-cyan-200"
-                      }`}>
-                        {isAdminUser(user) && <i className="bi bi-shield-lock-fill" />}
-                        {isAdminUser(user) ? "Admin" : "User"}
-                      </span>
+                      <select
+                        value={isAdminUser(user) ? "1" : "2"}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                        disabled={user.id.toString() === loggedInUserId || (user.email || "").trim().toLowerCase() === "admin@petstore.com"}
+                        className={`text-xs font-bold rounded-lg px-2 py-1 outline-none border transition-colors cursor-pointer ${
+                          isAdminUser(user)
+                            ? "bg-amber-50 text-amber-700 border-amber-200 focus:ring-2 focus:ring-amber-200"
+                            : "bg-cyan-50 text-cyan-700 border-cyan-200 focus:ring-2 focus:ring-cyan-200"
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <option value="1">Admin</option>
+                        <option value="2">User</option>
+                      </select>
                     </td>
                     <td className="px-6 py-4 text-xs font-mono text-slate-500">
                       {user.id}

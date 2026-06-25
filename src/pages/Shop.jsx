@@ -127,7 +127,7 @@ export default function Shop() {
         /* ── CART btn ── */
         .cart-btn {
           border-radius:9px; padding:7px 14px;
-          font-size:.78rem; font-weight:700; font-family:inherit;
+          font-size:.78rem; font-weight:700;
           background:#0ea186; color:#fff; border:none; cursor:pointer;
           transition:background .18s,transform .15s;
         }

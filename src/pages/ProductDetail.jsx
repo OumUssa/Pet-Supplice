@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Header/Footer";
-import { fetchPublicProducts } from "../API/api";
+import { fetchPublicProducts, fetchProductComments, addProductComment } from "../API/api";
+import { useToast } from "../components/Base/BaseToast";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const [comments, setComments] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -17,6 +23,15 @@ const ProductDetail = () => {
         const products = await fetchPublicProducts();
         const found = products.find((p) => p.id === Number(id) || p.title === id);
         setProduct(found || null);
+        
+        if (found) {
+          try {
+            const fetchedComments = await fetchProductComments(found.id);
+            setComments(fetchedComments || []);
+          } catch (e) {
+            console.warn("Failed to fetch comments", e);
+          }
+        }
       } catch (err) {
         console.error("Error loading product", err);
       } finally {
@@ -25,6 +40,29 @@ const ProductDetail = () => {
     };
     loadProduct();
   }, [id]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!product) return;
+    if (!newReview.comment.trim()) {
+      showError("Please write a comment.");
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      await addProductComment(product.id, newReview.comment, Number(newReview.rating));
+      showSuccess("Review submitted successfully!");
+      setNewReview({ rating: 5, comment: "" });
+      
+      const fetchedComments = await fetchProductComments(product.id);
+      setComments(fetchedComments || []);
+    } catch (err) {
+      console.error(err);
+      showError("Failed to submit review. Please ensure you are logged in.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -141,6 +179,86 @@ const ProductDetail = () => {
                 <i className="bi bi-cart-plus text-xl" />
                 Buy Now
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-12 bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-200">
+          <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
+            <i className="bi bi-star-fill text-amber-400" /> Product Reviews
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-10">
+            {/* Reviews List */}
+            <div className="md:col-span-2 space-y-6">
+              {comments.length === 0 ? (
+                <div className="text-center py-10 bg-slate-50 rounded-2xl border border-slate-100">
+                  <i className="bi bi-chat-left-dots text-3xl text-slate-300 mb-2 block" />
+                  <p className="text-slate-500 font-medium">No reviews yet. Be the first to review this product!</p>
+                </div>
+              ) : (
+                comments.map((c) => (
+                  <div key={c.id} className="pb-6 border-b border-slate-100 last:border-0 last:pb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs">
+                          {c.user?.name ? c.user.name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                        <span className="font-bold text-slate-800">{c.user?.name || "User"}</span>
+                      </div>
+                      <span className="text-xs text-slate-400">
+                        {new Date(c.created_at || Date.now()).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex text-amber-400 text-sm mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <i key={i} className={`bi bi-star${i < (c.rating || 5) ? '-fill' : ''}`} />
+                      ))}
+                    </div>
+                    <p className="text-slate-600 text-sm leading-relaxed">{c.comment}</p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Write a Review */}
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 h-fit">
+              <h3 className="font-bold text-slate-900 mb-4">Write a Review</h3>
+              <form onSubmit={handleReviewSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Rating</label>
+                  <select 
+                    value={newReview.rating}
+                    onChange={(e) => setNewReview({...newReview, rating: e.target.value})}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Poor</option>
+                    <option value="1">1 - Terrible</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Comment</label>
+                  <textarea 
+                    rows={4}
+                    value={newReview.comment}
+                    onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                    placeholder="Share your thoughts..."
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  disabled={submittingReview}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
             </div>
           </div>
         </div>

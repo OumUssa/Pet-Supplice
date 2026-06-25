@@ -14,12 +14,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { fetchAllProducts, fetchPetCategories } from "../../API/api";
+import { fetchAllProducts, fetchPetCategories, fetchAdminDashboard, fetchUserProfile, fetchPurchaseHistory } from "../../API/api";
 
 const ViewdetailDash = () => {
   const [stats, setStats] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [adminStats, setAdminStats] = useState({ total_users: 0, total_products: 0, total_purchases: 0, total_revenue: 0 });
 
   useEffect(() => {
     let intervalId;
@@ -28,11 +29,40 @@ const ViewdetailDash = () => {
       if (!isBackground) setLoading(true);
       try {
         if (!isBackground) console.log("📥 Fetching all products for dashboard...");
-        const [products, categories] = await Promise.all([
-          fetchAllProducts(),
+        
+        const userData = await fetchUserProfile().catch(() => null);
+        const isAdminUser = userData && (userData.role_id === 1 || (userData.email || "").toLowerCase() === "admin@petstore.com");
+
+        let dashboardData = {};
+        if (isAdminUser) {
+          try {
+            dashboardData = await fetchAdminDashboard();
+          } catch (e) {
+            console.warn("Failed to fetch admin stats (possibly not an admin)");
+          }
+        }
+        
+        const [productsData, categories] = await Promise.all([
+          isAdminUser ? fetchAllProducts() : fetchPurchaseHistory(),
           fetchPetCategories()
         ]);
+        
+        let products = Array.isArray(productsData) ? productsData : (productsData.data || []);
+        if (!isAdminUser) {
+          products = products.map(p => p.product).filter(Boolean);
+          const totalRevenue = productsData.reduce((sum, p) => sum + Number(p.amount || p.product?.price || 0), 0);
+          dashboardData = {
+            total_users: 1,
+            total_products: products.length,
+            total_purchases: productsData.length,
+            total_revenue: totalRevenue
+          };
+        }
+
         setAllProducts(products);
+        if (dashboardData && Object.keys(dashboardData).length > 0) {
+          setAdminStats(dashboardData);
+        }
 
         const categoryLookup = {};
         categories.forEach(c => categoryLookup[c.id] = c.name);
@@ -101,11 +131,39 @@ const ViewdetailDash = () => {
     setLoading(true);
     try {
       console.log("🔄 Refreshing dashboard data...");
-      const [products, categories] = await Promise.all([
-        fetchAllProducts(),
+      const userData = await fetchUserProfile().catch(() => null);
+      const isAdminUser = userData && (userData.role_id === 1 || (userData.email || "").toLowerCase() === "admin@petstore.com");
+
+      let dashboardData = {};
+      if (isAdminUser) {
+        try {
+          dashboardData = await fetchAdminDashboard();
+        } catch (e) {
+          console.warn("Failed to fetch admin stats");
+        }
+      }
+      
+      const [productsData, categories] = await Promise.all([
+        isAdminUser ? fetchAllProducts() : fetchPurchaseHistory(),
         fetchPetCategories()
       ]);
+      
+      let products = Array.isArray(productsData) ? productsData : (productsData.data || []);
+      if (!isAdminUser) {
+        products = products.map(p => p.product).filter(Boolean);
+        const totalRevenue = productsData.reduce((sum, p) => sum + Number(p.amount || p.product?.price || 0), 0);
+        dashboardData = {
+          total_users: 1,
+          total_products: products.length,
+          total_purchases: productsData.length,
+          total_revenue: totalRevenue
+        };
+      }
+
       setAllProducts(products);
+      if (dashboardData && Object.keys(dashboardData).length > 0) {
+        setAdminStats(dashboardData);
+      }
 
       const categoryLookup = {};
       categories.forEach(c => categoryLookup[c.id] = c.name);
@@ -207,6 +265,47 @@ const ViewdetailDash = () => {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
+        <div className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+            <i className="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Users</p>
+            <p className="mt-1 text-3xl font-black text-slate-900">{adminStats.total_users || 0}</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            <i className="bi bi-box-seam-fill"></i>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Products</p>
+            <p className="mt-1 text-3xl font-black text-slate-900">{adminStats.total_products || 0}</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+            <i className="bi bi-cart-check-fill"></i>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Purchases</p>
+            <p className="mt-1 text-3xl font-black text-slate-900">{adminStats.total_purchases || 0}</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-rose-100 bg-white p-5 shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+            <i className="bi bi-currency-dollar"></i>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Revenue</p>
+            <p className="mt-1 text-3xl font-black text-slate-900">
+              ${Number(adminStats.total_revenue || 0).toFixed(2)}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm">
           <p className="text-sm text-slate-500">Total Categories</p>
@@ -215,7 +314,7 @@ const ViewdetailDash = () => {
           </p>
         </div>
         <div className="rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm">
-          <p className="text-sm text-slate-500">Total Products</p>
+          <p className="text-sm text-slate-500">Total Products Inventory</p>
           <p className="mt-1 text-3xl font-bold text-slate-900">{totalStock}</p>
         </div>
         <div className="rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm">

@@ -7,7 +7,8 @@ import {
 } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Header/Footer";
-import { fetchPublicProducts } from "../API/api";
+import { fetchPublicProducts, purchaseProduct } from "../API/api";
+import { useToast } from "../components/Base/BaseToast";
 
 const ORDERS_KEY = "petstore_orders";
 
@@ -24,6 +25,7 @@ export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { showSuccess, showError } = useToast();
   const [item, setItem] = useState(location.state?.item || null);
   const [loading, setLoading] = useState(true);
   const [paid, setPaid] = useState(false);
@@ -86,7 +88,7 @@ export default function Checkout() {
     return "";
   };
 
-  const handlePay = (e) => {
+  const handlePay = async (e) => {
     e.preventDefault();
     const msg = validate();
     if (msg) {
@@ -94,21 +96,14 @@ export default function Checkout() {
       return;
     }
 
-    const order = {
-      id: `order-${Date.now()}`,
-      productId: item.id,
-      productName: item.title,
-      amount: Number(item.price),
-      createdAt: new Date().toISOString(),
-      customer: {
-        fullName: form.fullName,
-        email: form.email,
-      },
-      paymentStatus: "paid",
-    };
-
-    saveOrder(order);
-    setPaid(true);
+    try {
+      await purchaseProduct(item.title, 1, Number(item.price));
+      showSuccess("Payment successful! Item added to your store.");
+      navigate("/DashboardView/tableview");
+    } catch (err) {
+      console.error(err);
+      showError("Failed to process payment. Are you logged in?");
+    }
   };
 
   return (

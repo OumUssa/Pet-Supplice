@@ -5,6 +5,8 @@ import {
   fetchPetCategories,
   fetchProductTypes,
   deleteProduct,
+  fetchUserProfile,
+  fetchPurchaseHistory,
 } from "../../API/api";
 import { useToast } from "../Base/BaseToast";
 
@@ -19,6 +21,7 @@ const TableView = () => {
 
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [selectedType, setSelectedType] = useState("All");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [deleteModal, setDeleteModal] = useState({
@@ -33,13 +36,19 @@ const TableView = () => {
       try {
         console.log("📥 Fetching categories, types, and products...");
 
+        const userData = await fetchUserProfile().catch(() => null);
+        const isAdminUser = userData && (userData.role_id === 1 || (userData.email || "").toLowerCase() === "admin@petstore.com");
+        if (isAdminUser) {
+          setIsAdmin(true);
+        }
+
         const [productsData, categoriesData, typesData] = await Promise.all([
-          fetchAllProducts(),
+          isAdminUser ? fetchAllProducts() : fetchPurchaseHistory(),
           fetchPetCategories(),
           fetchProductTypes(),
         ]);
 
-        console.log("✅ Raw products:", productsData);
+        console.log("✅ Raw products/purchases:", productsData);
         console.log("✅ Raw categories:", categoriesData);
         console.log("✅ Raw types:", typesData);
 
@@ -51,7 +60,6 @@ const TableView = () => {
         categoriesArray.forEach((cat) => {
           catMap[cat.id] = cat.name;
         });
-        console.log("📋 Category map:", catMap);
 
         // Build type ID → name map
         const tMap = {};
@@ -61,12 +69,15 @@ const TableView = () => {
         typesArray.forEach((type) => {
           tMap[type.id] = type.name;
         });
-        console.log("📋 Type map:", tMap);
 
         // Map products
-        const productsArray = Array.isArray(productsData)
+        let productsArray = Array.isArray(productsData)
           ? productsData
           : productsData.data || [];
+
+        if (!isAdminUser) {
+          productsArray = productsArray.map(purchase => purchase.product).filter(Boolean);
+        }
 
         const mappedPets = productsArray.map((pet) => {
           const categoryName = catMap[pet.pet_category_id] || "Unknown";
@@ -189,12 +200,14 @@ const TableView = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => navigate("/DashboardView/insertStore")}
-          className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700">
-          <i className="bi bi-plus-circle" />
-          Add New Product
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => navigate("/DashboardView/insertStore")}
+            className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700">
+            <i className="bi bi-plus-circle" />
+            Add New Product
+          </button>
+        )}
       </div>
 
       {/* Summary cards */}
@@ -319,22 +332,26 @@ const TableView = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() =>
-                        navigate("/DashboardView/UpdateStore", {
-                          state: { item: pet },
-                        })
-                      }
-                      className="inline-flex items-center gap-1 rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-700">
-                      <i className="bi bi-pencil-square" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(pet.id, pet.title)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-rose-600">
-                      <i className="bi bi-trash3" />
-                      Delete
-                    </button>
+                    {isAdmin && (
+                      <>
+                        <button
+                          onClick={() =>
+                            navigate("/DashboardView/UpdateStore", {
+                              state: { item: pet },
+                            })
+                          }
+                          className="inline-flex items-center gap-1 rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-700">
+                          <i className="bi bi-pencil-square" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(pet.id, pet.title)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-rose-600">
+                          <i className="bi bi-trash3" />
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>
