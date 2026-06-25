@@ -23,7 +23,7 @@ const Contact = () => {
     name: "",
     email: "",
     phone: "",
-    topic: "Product Inquiry",
+    topic: "general",
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +44,7 @@ const Contact = () => {
         message: formData.message
       });
       showSuccess("Message sent successfully! We will get back to you soon.");
-      setFormData({ name: "", email: "", phone: "", topic: "Product Inquiry", message: "" });
+      setFormData({ name: "", email: "", phone: "", topic: "general", message: "" });
     } catch (error) {
       console.error(error);
       showError("Failed to send message. Please try again later.");
@@ -181,11 +181,11 @@ const Contact = () => {
                     onChange={(e) => setFormData({...formData, topic: e.target.value})}
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   >
-                    <option value="Product Inquiry">Product Inquiry</option>
-                    <option value="Order Support">Order Support</option>
-                    <option value="Delivery Information">Delivery Information</option>
-                    <option value="Partnership">Partnership</option>
-                    <option value="Other">Other</option>
+                    <option value="general">Product Inquiry / General</option>
+                    <option value="support">Order Support</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="change_role">Request Admin Role</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
 

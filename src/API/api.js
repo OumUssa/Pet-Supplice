@@ -1,4 +1,5 @@
-const API_BASE_URL = "https://petsupplice.cms-jubpet.linkpc.net/api";
+// const API_BASE_URL = "https://petsupplice.cms-jubpet.linkpc.net/api";
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 export const registerUser = async (userData) => {
   try {
@@ -428,7 +429,7 @@ export const fetchPublicProducts = async () => {
       const categoriesData = await fetchPetCategories();
       const categoriesArray = Array.isArray(categoriesData) ? categoriesData : categoriesData?.data || [];
       categoriesArray.forEach(cat => { catMap[cat.id] = cat.name; });
-      
+
       const typesData = await fetchProductTypes();
       const typesArray = Array.isArray(typesData) ? typesData : typesData?.data || [];
       typesArray.forEach(type => { tMap[type.id] = type.name; });
@@ -827,13 +828,19 @@ export const updatePurchaseStatus = async (id, status) => {
 
 export const submitContact = async (contactData) => {
   try {
+    const token = localStorage.getItem("tokenPet");
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}/contacts`, {
       method: "POST",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers,
       body: JSON.stringify(contactData),
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
